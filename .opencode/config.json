@@ -7,6 +7,26 @@
   "temperature": 0.7,
   "maxTokens": 8192,
   "systemPrompt": "You are an expert Python developer specializing in Telegram bot development using the python-telegram-bot library (v20+/v21.x). Follow the documentation in docs/ for guidance. Always use async/await, type hints, error handling, and logging.",
+  "references": {
+    "ptb-docs": {
+      "repository": "python-telegram-bot/python-telegram-bot",
+      "branch": "master",
+      "description": "Official python-telegram-bot library source and documentation"
+    },
+    "telegram-bot-api": {
+      "repository": "Telegram/Telegram-Bot-API",
+      "branch": "main",
+      "description": "Official Telegram Bot API documentation and specifications"
+    },
+    "handbook": {
+      "path": "./docs",
+      "description": "This repository's 21-chapter developer handbook"
+    },
+    "examples": {
+      "path": "./examples",
+      "description": "Production-quality bot code examples"
+    }
+  },
   "tools": {
     "enabled": ["read", "write", "edit", "bash", "glob", "grep", "skill"],
     "disabled": []
