@@ -29,9 +29,7 @@ Filters are boolean predicates evaluated against an incoming update. When used w
 from telegram.ext import MessageHandler, filters
 
 # Only handle text messages that are NOT commands
-application.add_handler(
-    MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text)
-)
+application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
 ```
 
 > [!IMPORTANT]
@@ -43,6 +41,7 @@ A filter is any callable (or `filters.BaseFilter` subclass) that accepts a `Mess
 
 ```python
 from telegram import Message
+
 
 # The filter protocol (simplified)
 class MyFilter:
@@ -84,21 +83,19 @@ All built-in filters are accessed via the `filters` namespace from `telegram.ext
 ```python
 from telegram.ext import MessageHandler, filters
 
+
 async def handle_text(update, context):
     await update.message.reply_text(f"You said: {update.message.text}")
 
-application.add_handler(
-    MessageHandler(filters.TEXT, handle_text)
-)
+
+application.add_handler(MessageHandler(filters.TEXT, handle_text))
 ```
 
 #### `filters.COMMAND`
 
 ```python
 # Match any message starting with /
-application.add_handler(
-    MessageHandler(filters.COMMAND, handle_any_command)
-)
+application.add_handler(MessageHandler(filters.COMMAND, handle_any_command))
 ```
 
 > [!NOTE]
@@ -115,11 +112,13 @@ from telegram.ext import MessageHandler, ContextTypes, filters
 
 logger = logging.getLogger(__name__)
 
+
 async def handle_email(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     match = context.match
     email = match.group(0)
     logger.info("Extracted email: %s", email)
     await update.message.reply_text(f"Found email: {email}")
+
 
 application.add_handler(
     MessageHandler(
@@ -181,9 +180,11 @@ Match media captions instead of message text:
 ```python
 from telegram.ext import MessageHandler, filters
 
+
 async def handle_caption(update, context):
     tag = context.match.group(1)
     await update.message.reply_text(f"Tag: {tag}")
+
 
 application.add_handler(
     MessageHandler(
@@ -223,11 +224,13 @@ application.add_handler(
 from telegram import Update
 from telegram.ext import MessageHandler, ContextTypes, filters
 
+
 async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     photo = update.message.photo[-1]  # Highest resolution variant
     file = await photo.get_file()
     path = await file.download_to_drive(f"downloads/{photo.file_id}.jpg")
     await update.message.reply_text(f"Photo saved to {path}")
+
 
 application.add_handler(MessageHandler(filters.PHOTO, handle_photo))
 ```
@@ -245,6 +248,7 @@ async def handle_document(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     path = await file.download_to_drive(f"downloads/{doc.file_name}")
     await update.message.reply_text(f"Document saved: {doc.file_name}")
 
+
 application.add_handler(MessageHandler(filters.Document.ALL, handle_document))
 ```
 
@@ -256,6 +260,7 @@ async def handle_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     await update.message.reply_text(
         f"Sticker: {sticker.emoji or '(no emoji)'} — Type: {sticker.type}"
     )
+
 
 application.add_handler(MessageHandler(filters.Sticker.ALL, handle_sticker))
 ```
@@ -294,15 +299,15 @@ Status updates are non-message updates that represent chat state changes. They a
 from telegram import Update
 from telegram.ext import MessageHandler, ContextTypes, filters
 
+
 async def welcome(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     for user in update.message.new_chat_members:
         if user.is_bot:
             continue
         await update.message.reply_text(f"Welcome, {user.first_name}!")
 
-application.add_handler(
-    MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, welcome)
-)
+
+application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, welcome))
 ```
 
 #### Handling Pinned Messages
@@ -315,9 +320,8 @@ async def pinned(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             f"A message was pinned: {pinned_msg.text or '(non-text)'}"
         )
 
-application.add_handler(
-    MessageHandler(filters.StatusUpdate.PINNED_MESSAGE, pinned)
-)
+
+application.add_handler(MessageHandler(filters.StatusUpdate.PINNED_MESSAGE, pinned))
 ```
 
 #### Catching All Status Updates
@@ -325,9 +329,7 @@ application.add_handler(
 Use `filters.StatusUpdate.ALL` to match any status update:
 
 ```python
-application.add_handler(
-    MessageHandler(filters.StatusUpdate.ALL, handle_any_status)
-)
+application.add_handler(MessageHandler(filters.StatusUpdate.ALL, handle_any_status))
 ```
 
 ---

@@ -48,9 +48,7 @@ class RateLimiter:
         """Check if user is within rate limit."""
         now = time()
         cutoff = now - RATE_LIMIT_WINDOW
-        self._timestamps[user_id] = [
-            t for t in self._timestamps[user_id] if t > cutoff
-        ]
+        self._timestamps[user_id] = [t for t in self._timestamps[user_id] if t > cutoff]
         if len(self._timestamps[user_id]) >= RATE_LIMIT:
             return False
         self._timestamps[user_id].append(now)
@@ -170,9 +168,7 @@ def main() -> None:
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("help", help_command))
     application.add_handler(CommandHandler("clear", clear_history))
-    application.add_handler(
-        MessageHandler(filters.TEXT & ~filters.COMMAND, chat)
-    )
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, chat))
 
     application.add_error_handler(error_handler)
 

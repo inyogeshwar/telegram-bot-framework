@@ -1,6 +1,3 @@
-# Conversation Handler Template
-
-```python
 #!/usr/bin/env python3
 """Conversation Bot Template — multi-step dialog example."""
 
@@ -47,8 +44,7 @@ async def state_two(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Handle second state."""
     context.user_data["age"] = update.message.text
     await update.message.reply_text(
-        f"Name: {context.user_data['name']}\n"
-        f"Age: {context.user_data['age']}"
+        f"Name: {context.user_data['name']}\nAge: {context.user_data['age']}"
     )
     return ConversationHandler.END
 
@@ -83,4 +79,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-```

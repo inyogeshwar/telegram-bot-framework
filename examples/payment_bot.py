@@ -21,15 +21,14 @@ import sys
 
 from telegram import (
     LabeledPrice,
-    PreCheckoutQuery,
     Update,
 )
 from telegram.ext import (
     ApplicationBuilder,
     CommandHandler,
     ContextTypes,
-    PreCheckoutQueryHandler,
     MessageHandler,
+    PreCheckoutQueryHandler,
     filters,
 )
 
@@ -85,7 +84,9 @@ async def buy(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     product_key = args[0].lower()
     if product_key not in PRODUCTS:
-        await update.message.reply_text("Unknown product. Use /buy to see available products.")
+        await update.message.reply_text(
+            "Unknown product. Use /buy to see available products."
+        )
         return
 
     product = PRODUCTS[product_key]
@@ -114,7 +115,9 @@ async def pre_checkout(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     await query.answer(ok=True)
 
 
-async def successful_payment(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def successful_payment(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> None:
     """Handle successful payment."""
     if not update.message or not update.message.successful_payment:
         return

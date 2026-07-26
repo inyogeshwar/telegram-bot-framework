@@ -42,6 +42,7 @@ Pass a publicly reachable URL. Telegram's servers download the file and attach i
 ```python
 URL = "https://example.com/assets/promo.jpg"
 
+
 async def send_by_url(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send a photo hosted on a public server."""
     if not update.message:
@@ -67,6 +68,7 @@ Open the file in binary mode and pass it as a `BufferedReader`. Telegram receive
 
 ```python
 from pathlib import Path
+
 
 async def send_by_upload(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Upload a local file to Telegram."""
@@ -141,7 +143,10 @@ Photos are JPEG-compressed by Telegram on receipt.
 from telegram import Update
 from telegram.ext import ContextTypes
 
-async def send_spoiler_photo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+
+async def send_spoiler_photo(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> None:
     """Send a photo with a spoiler overlay and caption above media."""
     if not update.message:
         return
@@ -171,6 +176,7 @@ Designed for music files. Telegram renders a custom audio player with metadata.
 
 ```python
 from pathlib import Path
+
 
 async def send_audio(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send an audio file with full metadata."""
@@ -207,6 +213,7 @@ The catch-all for any file type. Telegram does not attempt to render a player �
 ```python
 from pathlib import Path
 
+
 async def send_pdf(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send a PDF document."""
     if not update.message:
@@ -240,6 +247,7 @@ For MP4 and other video formats. Telegram renders an inline player.
 
 ```python
 from pathlib import Path
+
 
 async def send_video(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send a video that starts playing at the 10-second mark."""
@@ -277,6 +285,7 @@ GIFs and silent H.264/MPEG-4 AVC videos. Telegram renders an auto-playing animat
 ```python
 from pathlib import Path
 
+
 async def send_gif(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send a GIF animation with a caption."""
     if not update.message:
@@ -303,6 +312,7 @@ Push-to-talk–style voice messages. Telegram renders a voice player.
 
 ```python
 from pathlib import Path
+
 
 async def send_voice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send a voice message."""
@@ -331,6 +341,7 @@ Rounded-square video messages (the "video circles" in Telegram).
 
 ```python
 from pathlib import Path
+
 
 async def send_videonote(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send a rounded video note."""
@@ -376,7 +387,9 @@ Geographic coordinates. Supports static, live, and proximity-based locations.
 | `proximity_alert_radius` | `int` | Meters to trigger arrival alert (0–100000) |
 
 ```python
-async def send_live_location(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def send_live_location(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> None:
     """Send a live location that updates for 10 minutes."""
     if not update.message:
         return
@@ -502,6 +515,7 @@ Animated dice with random outcomes. Useful for games and casual interactions.
 ```python
 from telegram.constants import DiceEmoji
 
+
 async def send_dice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Roll a dice with a random emoji."""
     if not update.message:
@@ -529,6 +543,7 @@ Albums let you send 2–10 media items as a single grouped message. Telegram ren
 ```python
 from telegram import InputMediaPhoto, Update
 from telegram.ext import ContextTypes
+
 
 async def send_album(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send a photo album with individual captions."""
@@ -581,6 +596,7 @@ from telegram import (
 )
 from telegram.ext import ContextTypes
 
+
 async def send_mixed_album(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send an album mixing different media types."""
     if not update.message:
@@ -610,9 +626,9 @@ All `InputMedia*` classes accept `file_id`, HTTP URLs, or binary uploads:
 
 ```python
 media = [
-    InputMediaPhoto(media=update.message.photo[-1].file_id),       # file_id
-    InputMediaVideo(media="https://example.com/video.mp4"),        # URL
-    InputMediaDocument(media=open("report.pdf", "rb")),            # upload
+    InputMediaPhoto(media=update.message.photo[-1].file_id),  # file_id
+    InputMediaVideo(media="https://example.com/video.mp4"),  # URL
+    InputMediaDocument(media=open("report.pdf", "rb")),  # upload
 ]
 ```
 
@@ -639,6 +655,7 @@ from telegram.ext import ContextTypes
 DOWNLOAD_DIR = Path("downloads")
 DOWNLOAD_DIR.mkdir(exist_ok=True)
 
+
 async def download_photo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Download a photo sent by the user to the local filesystem."""
     if not not update.message or not update.message.photo:
@@ -660,6 +677,7 @@ If you need the bytes in memory (e.g., for processing without writing to disk):
 
 ```python
 import io
+
 
 async def process_photo_in_memory(
     update: Update, context: ContextTypes.DEFAULT_TYPE
@@ -711,6 +729,7 @@ Telegram Stars enable monetized media. `sendPaidMedia` requires a `star_count` a
 ```python
 from telegram import InputPaidMediaPhoto, InputPaidMediaVideo, Update
 from telegram.ext import ContextTypes
+
 
 async def send_paid_content(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send paid media content for 50 Telegram Stars."""
@@ -851,9 +870,7 @@ async def download_last(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     )
 
 
-async def receive_document(
-    update: Update, context: ContextTypes.DEFAULT_TYPE
-) -> None:
+async def receive_document(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Download a received document to the local filesystem."""
     if not update.effective_chat or not update.message or not update.message.document:
         return

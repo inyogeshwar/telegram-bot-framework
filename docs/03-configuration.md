@@ -92,9 +92,7 @@ class Config:
     DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///bot.db")
     REDIS_URL: str = os.getenv("REDIS_URL", "redis://localhost:6379")
     ADMIN_IDS: list[int] = [
-        int(uid)
-        for uid in os.getenv("ADMIN_IDS", "").split(",")
-        if uid.strip()
+        int(uid) for uid in os.getenv("ADMIN_IDS", "").split(",") if uid.strip()
     ]
     WEBHOOK_URL: str = os.getenv("WEBHOOK_URL", "")
     WEBHOOK_SECRET: str = os.getenv("WEBHOOK_SECRET", "")
@@ -308,7 +306,9 @@ def validate_config(cfg: Config) -> None:
 
     valid_levels = {"DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"}
     if cfg.LOG_LEVEL.upper() not in valid_levels:
-        errors.append(f"LOG_LEVEL must be one of {valid_levels}, got '{cfg.LOG_LEVEL}'.")
+        errors.append(
+            f"LOG_LEVEL must be one of {valid_levels}, got '{cfg.LOG_LEVEL}'."
+        )
 
     if errors:
         header = "Configuration validation failed:"

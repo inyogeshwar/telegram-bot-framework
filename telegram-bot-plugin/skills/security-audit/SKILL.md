@@ -35,6 +35,7 @@ TOKEN = "1234567890:ABC123..."
 
 # GOOD - use environment variables
 import os
+
 TOKEN = os.getenv("BOT_TOKEN")
 ```
 
@@ -44,6 +45,7 @@ TOKEN = os.getenv("BOT_TOKEN")
 async def handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     user_input = update.message.text
     # process without validation
+
 
 # GOOD - validate input
 async def handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -59,6 +61,7 @@ from collections import defaultdict
 from time import time
 
 rate_limits = defaultdict(list)
+
 
 def is_rate_limited(user_id: int, limit: int = 10, window: int = 60) -> bool:
     now = time()

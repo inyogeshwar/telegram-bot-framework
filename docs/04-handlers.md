@@ -41,11 +41,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-application = (
-    ApplicationBuilder()
-    .token("YOUR_BOT_TOKEN")
-    .build()
-)
+application = ApplicationBuilder().token("YOUR_BOT_TOKEN").build()
 ```
 
 The builder exposes a fluent API. Every setter returns the builder itself, so calls chain cleanly. Common builder methods:
@@ -118,6 +114,7 @@ application.add_handler(MessageHandler(filters.ALL, fallback), group=1)
 ```python
 from telegram.ext import ApplicationHandlerStop
 
+
 async def privileged_handler(update, context):
     if is_spam(update):
         await update.message.delete()
@@ -135,20 +132,24 @@ from telegram.ext import ConversationHandler, CommandHandler, MessageHandler, fi
 
 NAME, AGE = range(2)
 
+
 async def start_conversation(update, context):
     await update.message.reply_text("What is your name?")
     return NAME
+
 
 async def receive_name(update, context):
     context.user_data["name"] = update.message.text
     await update.message.reply_text("How old are you?")
     return AGE
 
+
 async def receive_age(update, context):
     name = context.user_data["name"]
     age = update.message.text
     await update.message.reply_text(f"{name}, you are {age} years old.")
     return ConversationHandler.END
+
 
 conv_handler = ConversationHandler(
     entry_points=[CommandHandler("register", start_conversation)],
@@ -177,12 +178,14 @@ application.add_handler(conv_handler)
 from telegram import Update
 from telegram.ext import CommandHandler, ContextTypes
 
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send a welcome message when the command /start is issued."""
     user = update.effective_user
     await update.message.reply_html(
         rf"Hello {user.mention_html()}! I am your bot.",
     )
+
 
 application.add_handler(CommandHandler("start", start))
 ```
@@ -198,6 +201,7 @@ from telegram.ext import CommandHandler, ContextTypes
 
 logger = logging.getLogger(__name__)
 
+
 async def greet(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Greet a user by name: /greet Alice"""
     if not context.args:
@@ -206,6 +210,7 @@ async def greet(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     name = " ".join(context.args)
     await update.message.reply_text(f"Hello, {name}!")
+
 
 application.add_handler(CommandHandler("greet", greet))
 ```
@@ -216,6 +221,7 @@ For large bots, register commands in a dedicated setup function:
 
 ```python
 from telegram.ext import Application
+
 
 def register_commands(application: Application) -> None:
     """Register all command handlers."""
@@ -237,6 +243,7 @@ Use `set_my_commands` to push a command list to Telegram's UI (`/` menu in chats
 ```python
 from telegram import BotCommand
 
+
 async def post_init(application: Application) -> None:
     commands = [
         BotCommand("start", "Start the bot"),
@@ -246,12 +253,8 @@ async def post_init(application: Application) -> None:
     ]
     await application.bot.set_my_commands(commands)
 
-application = (
-    ApplicationBuilder()
-    .token("YOUR_BOT_TOKEN")
-    .post_init(post_init)
-    .build()
-)
+
+application = ApplicationBuilder().token("YOUR_BOT_TOKEN").post_init(post_init).build()
 ```
 
 > [!NOTE]
@@ -306,13 +309,13 @@ application.remove_handler(temp)
 from telegram import Update
 from telegram.ext import MessageHandler, ContextTypes, filters
 
+
 async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Echo the user's text message."""
     await update.message.reply_text(update.message.text)
 
-application.add_handler(
-    MessageHandler(filters.TEXT & ~filters.COMMAND, echo)
-)
+
+application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
 ```
 
 ### Processing Media
@@ -324,6 +327,7 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     file = await photo.get_file()
     await file.download_to_drive(f"photos/{photo.file_id}.jpg")
     await update.message.reply_text("Photo saved!")
+
 
 application.add_handler(MessageHandler(filters.PHOTO, handle_photo))
 ```
@@ -355,6 +359,7 @@ Handles presses on inline keyboard buttons and other callback queries. **You mus
 from telegram import Update
 from telegram.ext import CallbackQueryHandler, ContextTypes
 
+
 async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle an inline keyboard button press."""
     query = update.callback_query
@@ -364,6 +369,7 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         await query.edit_message_text(text="You selected option A.")
     elif query.data == "option_b":
         await query.edit_message_text(text="You selected option B.")
+
 
 application.add_handler(CallbackQueryHandler(button_callback))
 ```
@@ -376,12 +382,11 @@ The `pattern` parameter accepts a regex that is matched against `callback_data`:
 from telegram.ext import CallbackQueryHandler
 
 # Match exactly "delete_123"
-application.add_handler(
-    CallbackQueryHandler(confirm_delete, pattern=r"^delete_\d+$")
-)
+application.add_handler(CallbackQueryHandler(confirm_delete, pattern=r"^delete_\d+$"))
 
 # Match using a compiled regex
 import re
+
 application.add_handler(
     CallbackQueryHandler(confirm_delete, pattern=re.compile(r"^delete_(?P<id>\d+)$"))
 )
@@ -401,6 +406,7 @@ await query.answer(text="Are you sure?", show_alert=True)  # Modal alert
 ```python
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
+
 async def settings(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Show settings keyboard."""
     keyboard = [
@@ -410,6 +416,7 @@ async def settings(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text(
         "Settings:", reply_markup=InlineKeyboardMarkup(keyboard)
     )
+
 
 async def settings_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.callback_query
@@ -439,6 +446,7 @@ Handles inline queries sent by users via `@yourbot query` in any chat.
 from telegram import InlineQueryResultArticle, InputTextMessageContent
 from telegram.ext import InlineQueryHandler, ContextTypes
 
+
 async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Answer inline queries with article results."""
     query = update.inline_query.query
@@ -466,6 +474,7 @@ import math
 
 RESULTS_PER_PAGE = 50
 
+
 async def paginated_inline(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.inline_query.query
     offset = int(update.inline_query.offset) if update.inline_query.offset else 0
@@ -476,7 +485,9 @@ async def paginated_inline(update: Update, context: ContextTypes.DEFAULT_TYPE) -
 
     results = [build_result(item) for item in page]
 
-    next_offset = str(offset + RESULTS_PER_PAGE) if offset + RESULTS_PER_PAGE < total else ""
+    next_offset = (
+        str(offset + RESULTS_PER_PAGE) if offset + RESULTS_PER_PAGE < total else ""
+    )
 
     await update.inline_query.answer(
         results,
@@ -495,6 +506,7 @@ Fires when a user **selects** an inline result and sends it to the chat. Useful 
 ```python
 from telegram.ext import ChosenInlineResultHandler, ContextTypes
 
+
 async def chosen_result(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     result = update.chosen_inline_result
     logger.info(
@@ -503,6 +515,7 @@ async def chosen_result(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         result.result_id,
         result.query,
     )
+
 
 application.add_handler(ChosenInlineResultHandler(chosen_result))
 ```
@@ -521,6 +534,7 @@ Fires when a user confirms a payment. You **must** respond within 10 seconds.
 from telegram import Update, PreCheckoutQuery
 from telegram.ext import PreCheckoutQueryHandler, ContextTypes
 
+
 async def pre_checkout(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Answer the PreCheckoutQuery."""
     query: PreCheckoutQuery = update.pre_checkout_query
@@ -529,6 +543,7 @@ async def pre_checkout(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         await query.answer(ok=True)
     else:
         await query.answer(ok=False, error_message="Something went wrong.")
+
 
 application.add_handler(PreCheckoutQueryHandler(pre_checkout))
 ```
@@ -540,6 +555,7 @@ Fires when a user provides a shipping address (for physical goods).
 ```python
 from telegram import Update, ShippingOption, LabeledPrice
 from telegram.ext import ShippingQueryHandler, ContextTypes
+
 
 async def shipping(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.shipping_query
@@ -560,6 +576,7 @@ async def shipping(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     else:
         await query.answer(ok=False, error_message="Unknown invoice.")
 
+
 application.add_handler(ShippingQueryHandler(shipping))
 ```
 
@@ -578,6 +595,7 @@ Handles answers to polls the bot created (non-anonymous polls).
 from telegram import Update
 from telegram.ext import PollAnswerHandler, ContextTypes
 
+
 async def poll_answer(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     answer = update.poll_answer
     logger.info(
@@ -586,6 +604,7 @@ async def poll_answer(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         answer.poll_id,
         answer.option_ids,
     )
+
 
 application.add_handler(PollAnswerHandler(poll_answer))
 ```
@@ -598,9 +617,11 @@ Handles updates when a poll the bot sent is updated (e.g., when a user votes).
 from telegram import Update
 from telegram.ext import PollHandler, ContextTypes
 
+
 async def poll_update(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     poll = update.poll
     logger.info("Poll %s updated. Total votes: %d", poll.id, poll.total_voter_count)
+
 
 application.add_handler(PollHandler(poll_update))
 ```
@@ -615,7 +636,10 @@ Tracks when chat members are promoted, demoted, restricted, or change their stat
 from telegram import Update
 from telegram.ext import ChatMemberHandler, ContextTypes
 
-async def chat_member_update(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+
+async def chat_member_update(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> None:
     result = update.chat_member
     old = result.old_chat_member
     new = result.new_chat_member
@@ -629,7 +653,10 @@ async def chat_member_update(update: Update, context: ContextTypes.DEFAULT_TYPE)
             result.chat.id,
         )
 
-application.add_handler(ChatMemberHandler(chat_member_update, ChatMemberHandler.CHAT_MEMBER))
+
+application.add_handler(
+    ChatMemberHandler(chat_member_update, ChatMemberHandler.CHAT_MEMBER)
+)
 ```
 
 ### `ChatMemberHandler` Modes
@@ -651,6 +678,7 @@ Fires when a user sends a join request to a group or channel with approvals enab
 from telegram import Update
 from telegram.ext import ChatJoinRequestHandler, ContextTypes
 
+
 async def join_request(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     request = update.chat_join_request
     user = request.user
@@ -658,6 +686,7 @@ async def join_request(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     # Auto-approve (or add your own logic)
     await request.approve()
     logger.info("Approved join request from %s to chat %s", user.id, request.chat.id)
+
 
 application.add_handler(ChatJoinRequestHandler(join_request))
 ```
@@ -681,6 +710,7 @@ Tracks when users add, remove, or change reactions to messages.
 from telegram import Update
 from telegram.ext import MessageReactionHandler, ContextTypes
 
+
 async def reaction_update(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     reaction = update.message_reaction
     logger.info(
@@ -690,6 +720,7 @@ async def reaction_update(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         reaction.old_reaction,
         reaction.new_reaction,
     )
+
 
 application.add_handler(MessageReactionHandler(reaction_update))
 ```
@@ -705,6 +736,7 @@ The error handler catches **all unhandled exceptions** from any handler callback
 ```python
 from telegram import Update
 from telegram.ext import ContextTypes
+
 
 async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Log the error and send a notification to the developer."""
@@ -731,6 +763,7 @@ import httpx
 from telegram import Update
 from telegram.error import Forbidden, BadRequest, TimedOut, NetworkError
 from telegram.ext import ContextTypes
+
 
 async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> None:
     exception = context.error
@@ -760,6 +793,7 @@ async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> N
 
 ```python
 import traceback
+
 
 async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> None:
     tb_list = traceback.format_exception(
@@ -842,6 +876,7 @@ logger = logging.getLogger(__name__)
 # Command handlers
 # ---------------------------------------------------------------------------
 
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     user = update.effective_user
     await update.message.reply_html(
@@ -879,6 +914,7 @@ async def settings(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 # Callback query handler
 # ---------------------------------------------------------------------------
 
+
 async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.callback_query
     await query.answer()
@@ -895,6 +931,7 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 # Echo handler (catch-all for text)
 # ---------------------------------------------------------------------------
 
+
 async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text(f"Echo: {update.message.text}")
 
@@ -902,6 +939,7 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 # ---------------------------------------------------------------------------
 # Error handler
 # ---------------------------------------------------------------------------
+
 
 async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> None:
     logger.error("Unhandled exception:", exc_info=context.error)
@@ -925,6 +963,7 @@ async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> N
 # Bot commands menu
 # ---------------------------------------------------------------------------
 
+
 async def post_init(application: Application) -> None:
     await application.bot.set_my_commands(
         [
@@ -940,13 +979,9 @@ async def post_init(application: Application) -> None:
 # Main
 # ---------------------------------------------------------------------------
 
+
 def main() -> None:
-    application = (
-        Application.builder()
-        .token(BOT_TOKEN)
-        .post_init(post_init)
-        .build()
-    )
+    application = Application.builder().token(BOT_TOKEN).post_init(post_init).build()
 
     # Group 0 — primary handlers
     application.add_handler(CommandHandler("start", start))
@@ -956,9 +991,7 @@ def main() -> None:
     application.add_handler(CallbackQueryHandler(button_callback))
 
     # Group 1 — catch-all (only reached if group 0 didn't match)
-    application.add_handler(
-        MessageHandler(filters.TEXT & ~filters.COMMAND, echo)
-    )
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
 
     # Error handler (always active)
     application.add_error_handler(error_handler)

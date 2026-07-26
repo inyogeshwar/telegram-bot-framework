@@ -15,7 +15,6 @@ from __future__ import annotations
 import logging
 import os
 import sys
-from pathlib import Path
 
 from aiohttp import web
 from telegram import Update
@@ -102,9 +101,7 @@ def main() -> None:
     application = ApplicationBuilder().token(token).build()
 
     application.add_handler(CommandHandler("start", start))
-    application.add_handler(
-        MessageHandler(filters.TEXT & ~filters.COMMAND, echo)
-    )
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
 
     # Set up startup/shutdown hooks
     application.post_init = on_startup

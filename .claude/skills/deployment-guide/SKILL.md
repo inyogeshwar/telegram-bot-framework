@@ -26,10 +26,12 @@ application.run_polling(drop_pending_updates=True)
 ```python
 from aiohttp import web
 
+
 async def webhook_handler(request):
     update = Update.de_json(await request.json(), application.bot)
     await application.process_update(update)
     return web.Response()
+
 
 app = web.Application()
 app.router.add_post("/webhook", webhook_handler)

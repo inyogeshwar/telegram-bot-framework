@@ -50,23 +50,28 @@ A `ConversationHandler` manages four components:
 ```python
 from telegram.ext import ConversationHandler, CommandHandler, MessageHandler, filters
 
+
 async def start(update, context):
     await update.message.reply_text("What is your name?")
     return NAME_STATE
+
 
 async def get_name(update, context):
     context.user_data["name"] = update.message.text
     await update.message.reply_text("What is your email?")
     return EMAIL_STATE
 
+
 async def get_email(update, context):
     context.user_data["email"] = update.message.text
     await update.message.reply_text("Registered!")
     return ConversationHandler.END
 
+
 async def cancel(update, context):
     await update.message.reply_text("Cancelled.")
     return ConversationHandler.END
+
 
 conv_handler = ConversationHandler(
     entry_points=[CommandHandler("register", start)],
@@ -161,10 +166,12 @@ Self-documenting and type-safe:
 ```python
 import enum
 
+
 class RegistrationState(enum.Enum):
     NAME = "name"
     EMAIL = "email"
     CONFIRM = "confirm"
+
 
 conv_handler = ConversationHandler(
     entry_points=[CommandHandler("register", start)],
@@ -234,7 +241,9 @@ async def get_name(update: Update, context: CallbackContext) -> int:
     """Receive the name and ask for email."""
     name = update.message.text.strip()
     if len(name) < 2:
-        await update.message.reply_text("Name must be at least 2 characters. Try again:")
+        await update.message.reply_text(
+            "Name must be at least 2 characters. Try again:"
+        )
         return NAME
 
     context.user_data["name"] = name
@@ -255,11 +264,15 @@ async def get_email(update: Update, context: CallbackContext) -> int:
     """Receive the email and ask for phone."""
     email = update.message.text.strip()
     if not EMAIL_RE.match(email):
-        await update.message.reply_text("That doesn't look like a valid email. Try again:")
+        await update.message.reply_text(
+            "That doesn't look like a valid email. Try again:"
+        )
         return EMAIL
 
     context.user_data["email"] = email
-    await update.message.reply_text("Got it!\nWhat is your phone number?\n(Send /skip to skip.)")
+    await update.message.reply_text(
+        "Got it!\nWhat is your phone number?\n(Send /skip to skip.)"
+    )
     return PHONE
 
 
@@ -310,7 +323,9 @@ async def confirm_registration(update: Update, context: CallbackContext) -> int:
 
 async def cancel(update: Update, context: CallbackContext) -> int:
     """Cancel the conversation."""
-    await update.message.reply_text("Registration cancelled.", reply_markup=ReplyKeyboardRemove())
+    await update.message.reply_text(
+        "Registration cancelled.", reply_markup=ReplyKeyboardRemove()
+    )
     context.user_data.clear()
     return ConversationHandler.END
 
@@ -329,7 +344,9 @@ registration_handler = ConversationHandler(
         ],
         CONFIRM: [
             CommandHandler("confirm", confirm_registration),
-            MessageHandler(filters.TEXT, show_confirmation),  # Re-show summary on any text
+            MessageHandler(
+                filters.TEXT, show_confirmation
+            ),  # Re-show summary on any text
         ],
     },
     fallbacks=[CommandHandler("cancel", cancel)],
@@ -366,34 +383,44 @@ class OrderState(enum.Enum):
     CONFIRM = "confirm"
 
 
-PRODUCTS = {"laptop": "Laptop — $999", "phone": "Phone — $699", "tablet": "Tablet — $449"}
+PRODUCTS = {
+    "laptop": "Laptop — $999",
+    "phone": "Phone — $699",
+    "tablet": "Tablet — $449",
+}
 
 
 def product_keyboard() -> InlineKeyboardMarkup:
-    return InlineKeyboardMarkup([
-        [InlineKeyboardButton(name, callback_data=f"product:{pid}")]
-        for pid, name in PRODUCTS.items()
-    ])
+    return InlineKeyboardMarkup(
+        [
+            [InlineKeyboardButton(name, callback_data=f"product:{pid}")]
+            for pid, name in PRODUCTS.items()
+        ]
+    )
 
 
 def quantity_keyboard() -> InlineKeyboardMarkup:
-    return InlineKeyboardMarkup([
+    return InlineKeyboardMarkup(
         [
-            InlineKeyboardButton("1", callback_data="qty:1"),
-            InlineKeyboardButton("2", callback_data="qty:2"),
-            InlineKeyboardButton("3", callback_data="qty:3"),
-        ],
-        [InlineKeyboardButton("← Back", callback_data="back:products")],
-    ])
+            [
+                InlineKeyboardButton("1", callback_data="qty:1"),
+                InlineKeyboardButton("2", callback_data="qty:2"),
+                InlineKeyboardButton("3", callback_data="qty:3"),
+            ],
+            [InlineKeyboardButton("← Back", callback_data="back:products")],
+        ]
+    )
 
 
 def confirm_keyboard() -> InlineKeyboardMarkup:
-    return InlineKeyboardMarkup([
+    return InlineKeyboardMarkup(
         [
-            InlineKeyboardButton("✅ Place Order", callback_data="order:confirm"),
-            InlineKeyboardButton("❌ Cancel", callback_data="order:cancel"),
+            [
+                InlineKeyboardButton("✅ Place Order", callback_data="order:confirm"),
+                InlineKeyboardButton("❌ Cancel", callback_data="order:cancel"),
+            ]
         ]
-    ])
+    )
 
 
 async def start_order(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -530,6 +557,7 @@ PROFILE_NAME, PROFILE_BIO = range(20, 22)
 
 # ── Settings sub-conversation ────────────────────────────────
 
+
 async def enter_settings(update: Update, context: CallbackContext) -> int:
     await update.message.reply_text("Settings > Language? (type a language code)")
     return SETTING_LANG
@@ -562,6 +590,7 @@ settings_conv = ConversationHandler(
 
 # ── Profile sub-conversation ─────────────────────────────────
 
+
 async def enter_profile(update: Update, context: CallbackContext) -> int:
     await update.message.reply_text("Profile > Name?")
     return PROFILE_NAME
@@ -582,7 +611,9 @@ async def get_profile_bio(update: Update, context: CallbackContext) -> int:
 profile_conv = ConversationHandler(
     entry_points=[CommandHandler("profile", enter_profile)],
     states={
-        PROFILE_NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_profile_name)],
+        PROFILE_NAME: [
+            MessageHandler(filters.TEXT & ~filters.COMMAND, get_profile_name)
+        ],
         PROFILE_BIO: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_profile_bio)],
     },
     fallbacks=[CommandHandler("cancel", lambda u, c: ConversationHandler.END)],
@@ -593,6 +624,7 @@ profile_conv = ConversationHandler(
 
 
 # ── Parent conversation ──────────────────────────────────────
+
 
 async def main_menu(update: Update, context: CallbackContext) -> int:
     await update.message.reply_text(
@@ -634,6 +666,7 @@ main_handler = ConversationHandler(
 
 ```python
 from telegram.ext import ApplicationBuilder, PicklePersistence
+
 
 async def post_init(application: ApplicationBuilder) -> None:
     """Called after persistence is loaded. Resume pending conversations."""
@@ -693,11 +726,14 @@ conv_handler = ConversationHandler(
     conversation_timeout=300,  # 5 minutes
 )
 
+
 # To handle timeout callbacks, use Application.bot_data or a custom callback:
 async def handle_timeout(update: Update, context: CallbackContext) -> None:
     """Called when a conversation times out."""
     if update.message:
-        await update.message.reply_text("Session timed out. Send /start to begin again.")
+        await update.message.reply_text(
+            "Session timed out. Send /start to begin again."
+        )
 ```
 
 > [!NOTE]
@@ -715,6 +751,7 @@ async def restart(update: Update, context: CallbackContext) -> int:
     return await start(update, context)  # Re-enter the first state
     # Note: this only works if start() returns the entry state correctly.
     # Alternatively, return the first state constant directly.
+
 
 conv_handler = ConversationHandler(
     entry_points=[CommandHandler("start", start)],
@@ -738,6 +775,7 @@ async def get_name(update, context):
     context.user_data["name"] = update.message.text
     await update.message.reply_text("What is your email?")
 
+
 # ✅ CORRECT
 async def get_name(update, context):
     context.user_data["name"] = update.message.text
@@ -756,6 +794,7 @@ Every terminal handler must explicitly return `ConversationHandler.END` to clean
 # ❌ WRONG — state is never cleaned up
 async def done(update, context):
     await update.message.reply_text("Done!")
+
 
 # ✅ CORRECT
 async def done(update, context):
@@ -776,12 +815,12 @@ Two `ConversationHandler` instances with the same `name` but different state def
 
 ```python
 # ❌ WRONG — catches /cancel, /help, etc., breaking fallbacks
-states={
+states = {
     NAME: [MessageHandler(filters.TEXT, get_name)],
 }
 
 # ✅ CORRECT — lets commands fall through to fallbacks
-states={
+states = {
     NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_name)],
 }
 ```

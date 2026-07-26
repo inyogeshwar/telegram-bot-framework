@@ -1,0 +1,53 @@
+{
+  "permissions": {
+    "allow": [
+      "bash(python *)",
+      "bash(pip install *)",
+      "bash(pytest *)",
+      "bash(ruff *)",
+      "bash(mypy *)",
+      "bash(git status)",
+      "bash(git log *)",
+      "bash(git diff *)"
+    ],
+    "deny": [
+      "bash(rm -rf /)",
+      "bash(git push --force *)",
+      "bash(pip uninstall *)"
+    ]
+  },
+  "hooks": {
+    "PreToolCall": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'Running command...'"
+          }
+        ]
+      }
+    ],
+    "PostToolCall": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'File updated. Review changes with git diff.'"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'Processing request...'"
+          }
+        ]
+      }
+    ]
+  }
+}

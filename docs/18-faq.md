@@ -138,6 +138,7 @@ logger = logging.getLogger(__name__)
 async def debug_catcher(update, context):
     logger.warning("Unhandled update: %s", update)
 
+
 application.add_handler(MessageHandler(filters.ALL, debug_catcher), group=999)
 ```
 
@@ -165,6 +166,7 @@ changed.
 ```python
 async def debug_callback(update, context):
     import logging
+
     logging.warning("Callback data: %r", update.callback_query.data)
 ```
 
@@ -604,6 +606,7 @@ async def log_updates(update, context):
             update.callback_query.data,
             update.effective_user.id,
         )
+
 
 application.add_handler(MessageHandler(filters.ALL, log_updates), group=-1)
 ```

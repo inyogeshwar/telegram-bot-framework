@@ -160,11 +160,13 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 async def post_shutdown(application):
     """Called after the application shuts down."""
     logger.info("Shutting down gracefully...")
     if hasattr(application.bot_data, "db_pool"):
         await application.bot_data["db_pool"].close()
+
 
 def run():
     application = (
@@ -177,7 +179,9 @@ def run():
 
     loop = asyncio.get_event_loop()
     for sig in (signal.SIGTERM, signal.SIGINT):
-        loop.add_signal_handler(sig, lambda: asyncio.ensure_future(application.shutdown()))
+        loop.add_signal_handler(
+            sig, lambda: asyncio.ensure_future(application.shutdown())
+        )
 
     application.run_polling()
 ```
@@ -204,6 +208,7 @@ import hmac
 import hashlib
 from urllib.parse import urlparse, parse_qs
 
+
 def validate_init_data(init_data: str, bot_token: str) -> bool:
     """Validate Telegram Web App initData."""
     parsed = parse_qs(init_data)
@@ -211,10 +216,7 @@ def validate_init_data(init_data: str, bot_token: str) -> bool:
     if not received_hash:
         return False
 
-    data_check_string = "\n".join(
-        f"{k}={v[0]}"
-        for k, v in sorted(parsed.items())
-    )
+    data_check_string = "\n".join(f"{k}={v[0]}" for k, v in sorted(parsed.items()))
     secret_key = hmac.new(
         b"WebAppData",
         bot_token.encode(),
@@ -249,10 +251,12 @@ These are concrete recommendations for developers (and agents) who consume the `
 from dataclasses import dataclass
 from typing import Callable, Awaitable
 
+
 @dataclass
 class CallbackRoute:
     prefix: str
     handler: Callable
+
 
 class CallbackRouter:
     def __init__(self):

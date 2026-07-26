@@ -1,29 +1,25 @@
-# Telegram Bot Framework — Gemini CLI Config
-
-## Project Context
-Developer handbook for Telegram bot development with python-telegram-bot v20+.
-
-## Code Standards
-- Use async/await patterns (v20+)
-- PEP 484 type hints
-- Error handling and logging
-- PEP 8 compliant
-
-## Repository Structure
-- `docs/` — 21-chapter handbook
-- `examples/` — Production bot examples
-- `skills/` — Skill definitions
-
-## Key Patterns
-```python
-from telegram import Update
-from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
-
-async def handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update.message.reply_text("Response")
-```
-
-## Security
-- Use environment variables for tokens
-- Never hardcode secrets
-- Validate all user input
+{
+  "context": {
+    "fileName": ["GEMINI.md", "AGENTS.md", "CLAUDE.md"]
+  },
+  "theme": {
+    "color": {
+      "background": "#000000",
+      "foreground": "#FFFFFF",
+      "accent": "#4CAF50"
+    }
+  },
+  "permissions": {
+    "allow": [
+      "bash(python *)",
+      "bash(pip install *)",
+      "bash(pytest *)",
+      "bash(ruff *)",
+      "bash(mypy *)"
+    ],
+    "deny": [
+      "bash(rm -rf /)",
+      "bash(git push --force *)"
+    ]
+  }
+}

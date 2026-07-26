@@ -55,12 +55,16 @@ sequenceDiagram
 from telegram import Update
 from telegram.ext import ApplicationBuilder, InlineQueryHandler, ContextTypes
 
-async def inline_query_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+
+async def inline_query_handler(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> None:
     """Handle incoming inline queries."""
     query = update.inline_query.query
     user = update.inline_query.from_user
     # ... process and answer
     pass
+
 
 app = ApplicationBuilder().token("BOT_TOKEN").build()
 app.add_handler(InlineQueryHandler(inline_query_handler))
@@ -129,9 +133,9 @@ result = InlineQueryResultArticle(
     thumb_url="https://example.com/python-icon.png",
     thumb_width=48,
     thumb_height=48,
-    reply_markup=InlineKeyboardMarkup([
-        [InlineKeyboardButton("Open Docs", url="https://docs.python.org/3/")]
-    ]),
+    reply_markup=InlineKeyboardMarkup(
+        [[InlineKeyboardButton("Open Docs", url="https://docs.python.org/3/")]]
+    ),
 )
 ```
 
@@ -542,10 +546,18 @@ logger = logging.getLogger(__name__)
 # Simulated database
 DATABASE = [
     {"id": 1, "title": "Python Basics", "snippet": "Variables, loops, functions..."},
-    {"id": 2, "title": "Advanced Python", "snippet": "Decorators, generators, async..."},
+    {
+        "id": 2,
+        "title": "Advanced Python",
+        "snippet": "Decorators, generators, async...",
+    },
     {"id": 3, "title": "Python Web Dev", "snippet": "Django, Flask, FastAPI..."},
     {"id": 4, "title": "Python Testing", "snippet": "pytest, unittest, mocking..."},
-    {"id": 5, "title": "Python Data Science", "snippet": "NumPy, Pandas, Matplotlib..."},
+    {
+        "id": 5,
+        "title": "Python Data Science",
+        "snippet": "NumPy, Pandas, Matplotlib...",
+    },
     {"id": 6, "title": "Python Async", "snippet": "asyncio, coroutines, tasks..."},
     {"id": 7, "title": "Python Packaging", "snippet": "pip, poetry, wheels..."},
     {"id": 8, "title": "Python Security", "snippet": "Cryptography, auth, OWASP..."},
@@ -565,7 +577,8 @@ def search_database(query: str, offset: int, limit: int) -> list[dict]:
     else:
         query_lower = query.lower()
         filtered = [
-            item for item in DATABASE
+            item
+            for item in DATABASE
             if query_lower in item["title"].lower()
             or query_lower in item["snippet"].lower()
         ]
@@ -658,9 +671,7 @@ async def inline_query_handler(
         )
 
 
-async def error_handler(
-    update: object, context: ContextTypes.DEFAULT_TYPE
-) -> None:
+async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Log errors."""
     logger.error("Exception while handling update: %s", context.error, exc_info=True)
 
@@ -749,6 +760,7 @@ If the user has shared their location with your bot and typed an inline query, y
 
 ```python
 from telegram import InlineQueryResultArticle, InputTextMessageContent
+
 
 async def location_inline(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     location = update.inline_query.location

@@ -172,9 +172,10 @@ DATABASE_URL=your_database_url_here
 import os
 import time
 
+
 def get_token() -> str:
     """Re-read token from environment on each call.
-    
+
     Allows rotation without restart when environment
     is updated externally (e.g., Secrets Manager refresh).
     """
@@ -235,21 +236,22 @@ import re
 MAX_MESSAGE_LENGTH = 4096
 MAX_CALLBACK_DATA = 64
 
+
 def validate_text_input(text: str | None, max_length: int = MAX_MESSAGE_LENGTH) -> str:
     """Validate and sanitize user text input."""
     if text is None:
         raise ValueError("Input text must not be None")
-    
+
     # Strip null bytes and control characters (except newlines/tabs)
-    text = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]', '', text)
-    
+    text = re.sub(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]", "", text)
+
     # Enforce length limit
     text = text.strip()
     if len(text) == 0:
         raise ValueError("Input text must not be empty")
     if len(text) > max_length:
         raise ValueError(f"Input text exceeds maximum length of {max_length}")
-    
+
     return text
 
 
@@ -260,7 +262,7 @@ def validate_callback_data(data: str | None) -> str:
     if len(data) > MAX_CALLBACK_DATA:
         raise ValueError(f"Callback data exceeds {MAX_CALLBACK_DATA} bytes")
     # Only allow safe characters
-    if not re.match(r'^[a-zA-Z0-9_:./\-]+$', data):
+    if not re.match(r"^[a-zA-Z0-9_:./\-]+$", data):
         raise ValueError("Callback data contains invalid characters")
     return data
 
@@ -273,7 +275,7 @@ def validate_deep_link(payload: str | None) -> str:
     if len(payload) > 64:
         raise ValueError("Deep link payload too long")
     # Alphanumeric + underscores only (adjust as needed)
-    if not re.match(r'^[a-zA-Z0-9_\-]+$', payload):
+    if not re.match(r"^[a-zA-Z0-9_\-]+$", payload):
         raise ValueError("Deep link payload contains invalid characters")
     return payload
 ```
@@ -303,27 +305,28 @@ import aiohttp
 MAX_FILE_SIZE = 50 * 1024 * 1024  # 50 MB
 ALLOWED_MIME_TYPES = {"image/jpeg", "image/png", "image/gif", "image/webp"}
 
+
 async def safe_download_file(file_id: str, context: ContextTypes.DEFAULT_TYPE) -> bytes:
     """Download a Telegram file with safety checks."""
     file = await context.bot.get_file(file_id)
-    
+
     # Check file size
     if file.file_size > MAX_FILE_SIZE:
         raise ValueError(f"File too large: {file.file_size} bytes")
-    
+
     async with aiohttp.ClientSession() as session:
         async with session.get(file.file_path) as resp:
             content = await resp.read()
-    
+
     # Verify actual size matches reported size
     if len(content) > MAX_FILE_SIZE:
         raise ValueError("Downloaded file exceeds size limit")
-    
+
     # Verify MIME type (don't trust extension)
     detected = magic.from_buffer(content, mime=True)
     if detected not in ALLOWED_MIME_TYPES:
         raise ValueError(f"Unexpected file type: {detected}")
-    
+
     return content
 ```
 
@@ -347,19 +350,18 @@ await message.reply_text(f"<b>Hello, {user_name}!</b>", parse_mode="HTML")
 ```python
 import html
 
+
 def safe_html(text: str) -> str:
     """Escape text for safe use in HTML parse_mode messages.
-    
+
     Escapes: & < > " '
     """
     return html.escape(text, quote=True)
 
+
 # Usage
 user_name = update.effective_user.first_name
-await message.reply_text(
-    f"<b>Hello, {safe_html(user_name)}!</b>",
-    parse_mode="HTML"
-)
+await message.reply_text(f"<b>Hello, {safe_html(user_name)}!</b>", parse_mode="HTML")
 ```
 
 **Characters escaped:**
@@ -383,16 +385,17 @@ _ * [ ] ( ) ~ ` > # + - = | { } . !
 ```python
 import re
 
+
 def safe_markdown(text: str) -> str:
     """Escape text for safe use in MarkdownV2 parse_mode messages."""
-    special_chars = r'_*[]()~`>#+-=|{}.!'
-    return re.sub(f'([{re.escape(special_chars)}])', r'\\\1', text)
+    special_chars = r"_*[]()~`>#+-=|{}.!"
+    return re.sub(f"([{re.escape(special_chars)}])", r"\\\1", text)
+
 
 # Usage
 user_name = update.effective_user.first_name
 await message.reply_text(
-    f"*Hello, {safe_markdown(user_name)}!*",
-    parse_mode="MarkdownV2"
+    f"*Hello, {safe_markdown(user_name)}!*", parse_mode="MarkdownV2"
 )
 ```
 
@@ -402,44 +405,45 @@ await message.reply_text(
 import html as _html
 import re
 
+
 class SafeFormatter:
     """Safe message formatting with injection prevention."""
-    
+
     @staticmethod
     def bold(text: str) -> str:
         return f"<b>{_html.escape(text)}</b>"
-    
+
     @staticmethod
     def italic(text: str) -> str:
         return f"<i>{_html.escape(text)}</i>"
-    
+
     @staticmethod
     def code(text: str) -> str:
         return f"<code>{_html.escape(text)}</code>"
-    
+
     @staticmethod
     def pre(text: str, language: str = "") -> str:
         return f"<pre>{_html.escape(text)}</pre>"
-    
+
     @staticmethod
     def link(text: str, url: str) -> str:
         """Create a safe hyperlink."""
         safe_text = _html.escape(text)
         # Only allow http/https URLs
-        if not url.startswith(('http://', 'https://')):
+        if not url.startswith(("http://", "https://")):
             raise ValueError(f"Invalid URL scheme: {url}")
         return f'<a href="{url}">{safe_text}</a>'
-    
+
     @staticmethod
     def mention(text: str, user_id: int) -> str:
         safe_text = _html.escape(text)
         return f'<a href="tg://user?id={user_id}">{safe_text}</a>'
 
+
 # Usage
 fmt = SafeFormatter()
 await message.reply_text(
-    f"{fmt.bold(safe_html(user_name))} joined the group!",
-    parse_mode="HTML"
+    f"{fmt.bold(safe_html(user_name))} joined the group!", parse_mode="HTML"
 )
 ```
 
@@ -447,23 +451,25 @@ await message.reply_text(
 
 ```python
 # Telegram MarkdownV2 special characters (from Bot API docs)
-MARKDOWN_V2_SPECIAL = r'_*[]()~`>#+-=|{}.!'
+MARKDOWN_V2_SPECIAL = r"_*[]()~`>#+-=|{}.!"
+
 
 def escape_markdown_v2(text: str) -> str:
     """Escape all MarkdownV2 special characters.
-    
+
     Within pre/code blocks, only escape ` and \.
     """
     result = []
     for char in text:
         if char in MARKDOWN_V2_SPECIAL:
-            result.append('\\')
+            result.append("\\")
         result.append(char)
-    return ''.join(result)
+    return "".join(result)
+
 
 def escape_markdown_v2_code(text: str) -> str:
     """Escape text inside MarkdownV2 pre or code blocks."""
-    return text.replace('\\', '\\\\').replace('`', '\\`')
+    return text.replace("\\", "\\\\").replace("`", "\\`")
 ```
 
 ---
@@ -492,9 +498,10 @@ import time
 import asyncio
 from collections import defaultdict
 
+
 class TokenBucketRateLimiter:
     """Per-user token bucket rate limiter."""
-    
+
     def __init__(self, rate: float, capacity: int):
         """
         Args:
@@ -506,23 +513,22 @@ class TokenBucketRateLimiter:
         self.tokens: dict[int, float] = defaultdict(lambda: capacity)
         self.last_refill: dict[int, float] = defaultdict(time.monotonic)
         self._lock = asyncio.Lock()
-    
+
     async def acquire(self, user_id: int) -> bool:
         """Try to acquire a token. Returns True if allowed."""
         async with self._lock:
             now = time.monotonic()
             elapsed = now - self.last_refill[user_id]
             self.tokens[user_id] = min(
-                self.capacity,
-                self.tokens[user_id] + elapsed * self.rate
+                self.capacity, self.tokens[user_id] + elapsed * self.rate
             )
             self.last_refill[user_id] = now
-            
+
             if self.tokens[user_id] >= 1:
                 self.tokens[user_id] -= 1
                 return True
             return False
-    
+
     def retry_after(self, user_id: int) -> float:
         """Calculate seconds until next token is available."""
         if self.tokens[user_id] >= 1:
@@ -539,20 +545,23 @@ strict_limiter = TokenBucketRateLimiter(rate=0.1, capacity=3)
 
 def rate_limit(limiter: TokenBucketRateLimiter):
     """Decorator for rate-limiting handler functions."""
+
     def decorator(func):
         @wraps(func)
         async def wrapper(update: Update, context: ContextTypes.DEFAULT_TYPE):
             user_id = update.effective_user.id
-            
+
             if not await limiter.acquire(user_id):
                 wait = limiter.retry_after(user_id)
                 await update.message.reply_text(
                     f"Rate limit exceeded. Please try again in {wait:.0f} seconds."
                 )
                 return
-            
+
             return await func(update, context)
+
         return wrapper
+
     return decorator
 
 
@@ -569,24 +578,25 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 import time
 from collections import deque
 
+
 class SlidingWindowRateLimiter:
     """Sliding window counter rate limiter."""
-    
+
     def __init__(self, max_requests: int, window_seconds: float):
         self.max_requests = max_requests
         self.window_seconds = window_seconds
         self.requests: dict[int, deque] = defaultdict(deque)
         self._lock = asyncio.Lock()
-    
+
     async def is_allowed(self, user_id: int) -> bool:
         async with self._lock:
             now = time.time()
             window_start = now - self.window_seconds
-            
+
             # Remove expired entries
             while self.requests[user_id] and self.requests[user_id][0] < window_start:
                 self.requests[user_id].popleft()
-            
+
             if len(self.requests[user_id]) < self.max_requests:
                 self.requests[user_id].append(now)
                 return True
@@ -598,24 +608,27 @@ class SlidingWindowRateLimiter:
 ```python
 from telegram.error import RetryAfter, TimedOut, NetworkError
 
+
 async def safe_send_message(bot, chat_id: int, text: str, **kwargs):
     """Send a message with retry-after handling."""
     max_retries = 3
-    
+
     for attempt in range(max_retries):
         try:
             return await bot.send_message(chat_id=chat_id, text=text, **kwargs)
         except RetryAfter as e:
             wait_time = e.retry_after
-            logger.warning(f"Rate limited. Waiting {wait_time}s (attempt {attempt + 1})")
+            logger.warning(
+                f"Rate limited. Waiting {wait_time}s (attempt {attempt + 1})"
+            )
             await asyncio.sleep(wait_time + 1)  # Add 1s buffer
         except TimedOut:
             logger.warning(f"Timed out sending to {chat_id} (attempt {attempt + 1})")
-            await asyncio.sleep(2 ** attempt)  # Exponential backoff
+            await asyncio.sleep(2**attempt)  # Exponential backoff
         except NetworkError as e:
             logger.error(f"Network error: {e} (attempt {attempt + 1})")
-            await asyncio.sleep(2 ** attempt)
-    
+            await asyncio.sleep(2**attempt)
+
     logger.error(f"Failed to send message to {chat_id} after {max_retries} attempts")
     return None
 ```
@@ -639,17 +652,20 @@ from telegram.constants import ChatMemberStatus
 
 ALLOWED_ADMIN_IDS = {123456789, 987654321}  # Or load from config
 
+
 def admin_only(func):
     """Restrict command to bot administrators (by user ID)."""
+
     @wraps(func)
     async def wrapper(update: Update, context: ContextTypes.DEFAULT_TYPE):
         user_id = update.effective_user.id
-        
+
         if user_id not in ALLOWED_ADMIN_IDS:
             await update.message.reply_text("⛔ Access denied. Admin only.")
             return
-        
+
         return await func(update, context)
+
     return wrapper
 
 
@@ -664,30 +680,33 @@ async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 ```python
 async def is_chat_admin(
-    context: ContextTypes.DEFAULT_TYPE,
-    chat_id: int,
-    user_id: int
+    context: ContextTypes.DEFAULT_TYPE, chat_id: int, user_id: int
 ) -> bool:
     """Check if user is an admin or creator of the chat."""
     try:
         member = await context.bot.get_chat_member(chat_id, user_id)
-        return member.status in (ChatMemberStatus.CREATOR, ChatMemberStatus.ADMINISTRATOR)
+        return member.status in (
+            ChatMemberStatus.CREATOR,
+            ChatMemberStatus.ADMINISTRATOR,
+        )
     except Exception:
         return False
 
 
 def chat_admin_only(func):
     """Restrict command to chat administrators (server-verified)."""
+
     @wraps(func)
     async def wrapper(update: Update, context: ContextTypes.DEFAULT_TYPE):
         user_id = update.effective_user.id
         chat_id = update.effective_chat.id
-        
+
         if not await is_chat_admin(context, chat_id, user_id):
             await update.message.reply_text("⛔ Chat admin only.")
             return
-        
+
         return await func(update, context)
+
     return wrapper
 ```
 
@@ -697,11 +716,13 @@ def chat_admin_only(func):
 from enum import Enum
 from functools import wraps
 
+
 class Role(Enum):
     USER = "user"
     MODERATOR = "moderator"
     ADMIN = "admin"
     SUPER_ADMIN = "super_admin"
+
 
 ROLE_HIERARCHY = {
     Role.USER: 0,
@@ -709,6 +730,7 @@ ROLE_HIERARCHY = {
     Role.ADMIN: 2,
     Role.SUPER_ADMIN: 3,
 }
+
 
 def get_user_role(user_id: int) -> Role:
     """Look up user role from database/config."""
@@ -723,20 +745,23 @@ def get_user_role(user_id: int) -> Role:
 
 def require_role(minimum_role: Role):
     """Decorator that enforces minimum role level."""
+
     def decorator(func):
         @wraps(func)
         async def wrapper(update: Update, context: ContextTypes.DEFAULT_TYPE):
             user_id = update.effective_user.id
             user_role = get_user_role(user_id)
-            
+
             if ROLE_HIERARCHY[user_role] < ROLE_HIERARCHY[minimum_role]:
                 await update.message.reply_text(
                     f"⛔ Required role: {minimum_role.value}"
                 )
                 return
-            
+
             return await func(update, context)
+
         return wrapper
+
     return decorator
 
 
@@ -745,6 +770,7 @@ def require_role(minimum_role: Role):
 async def delete_user(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Delete a user record — admin only."""
     pass
+
 
 @require_role(Role.MODERATOR)
 async def mute_user(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -760,26 +786,30 @@ import os
 # Whitelist of allowed chat IDs for group deployment
 ALLOWED_CHAT_IDS: set[int] = set()
 
+
 def load_allowed_chats():
     """Load allowed chat IDs from environment."""
     global ALLOWED_CHAT_IDS
     raw = os.environ.get("ALLOWED_CHAT_IDS", "")
     ALLOWED_CHAT_IDS = {int(cid.strip()) for cid in raw.split(",") if cid.strip()}
 
+
 load_allowed_chats()
 
 
 def bot_in_allowed_chat(func):
     """Only respond in whitelisted chats."""
+
     @wraps(func)
     async def wrapper(update: Update, context: ContextTypes.DEFAULT_TYPE):
         chat_id = update.effective_chat.id
-        
+
         if ALLOWED_CHAT_IDS and chat_id not in ALLOWED_CHAT_IDS:
             # Silently ignore — don't reveal bot existence
             return
-        
+
         return await func(update, context)
+
     return wrapper
 ```
 
@@ -805,13 +835,14 @@ import hmac
 
 SECRET_KEY = os.environ["CALLBACK_SECRET"]
 
+
 def encode_callback(action: str, payload: dict) -> str:
     """Encode callback data with HMAC integrity check."""
     data = json.dumps({"a": action, "p": payload}, separators=(",", ":"))
-    
+
     if len(data.encode("utf-8")) > 63:
         raise ValueError("Callback data exceeds 63 bytes (reserving 1 for separator)")
-    
+
     sig = hmac.new(SECRET_KEY.encode(), data.encode(), hashlib.sha256).hexdigest()[:8]
     return f"{sig}:{data}"
 
@@ -820,26 +851,32 @@ def decode_callback(data: str) -> tuple[str, dict]:
     """Decode and verify callback data integrity."""
     if ":" not in data:
         raise ValueError("Invalid callback data format")
-    
+
     sig, payload_str = data.split(":", 1)
-    
+
     expected_sig = hmac.new(
         SECRET_KEY.encode(), payload_str.encode(), hashlib.sha256
     ).hexdigest()[:8]
-    
+
     if not hmac.compare_digest(sig, expected_sig):
         raise ValueError("Callback data signature mismatch")
-    
+
     decoded = json.loads(payload_str)
     return decoded["a"], decoded["p"]
 
 
 # Usage
 callback_data = encode_callback("confirm_delete", {"user_id": 123})
-inline_keyboard = InlineKeyboardMarkup([[
-    InlineKeyboardButton("Yes", callback_data=encode_callback("confirm_delete", {"user_id": 123})),
-    InlineKeyboardButton("No", callback_data=encode_callback("cancel", {})),
-]])
+inline_keyboard = InlineKeyboardMarkup(
+    [
+        [
+            InlineKeyboardButton(
+                "Yes", callback_data=encode_callback("confirm_delete", {"user_id": 123})
+            ),
+            InlineKeyboardButton("No", callback_data=encode_callback("cancel", {})),
+        ]
+    ]
+)
 
 
 # In handler
@@ -850,7 +887,7 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except ValueError:
         await query.answer("Invalid action.", show_alert=True)
         return
-    
+
     if action == "confirm_delete":
         # Process deletion...
         pass
@@ -861,21 +898,23 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 ```python
 # Simple pattern-based routing (no HMAC overhead)
 VALID_CALLBACKS = {
-    "lang:": r"^lang:[a-z]{2}$",          # lang:en, lang:fr
+    "lang:": r"^lang:[a-z]{2}$",  # lang:en, lang:fr
     "settings:": r"^settings:(notifications|theme|language)$",
     "page:": r"^page:\d+$",
 }
 
+
 def validate_callback_data(data: str) -> tuple[str, str] | None:
     """Validate callback data against known patterns.
-    
+
     Returns (prefix, value) or None if invalid.
     """
     import re
+
     for prefix, pattern in VALID_CALLBACKS.items():
         if data.startswith(prefix):
             if re.match(pattern, data):
-                return prefix, data[len(prefix):]
+                return prefix, data[len(prefix) :]
             return None
     return None
 ```
@@ -913,6 +952,7 @@ BOT_TOKEN = os.environ["BOT_TOKEN"]
 application = ApplicationBuilder().token(BOT_TOKEN).build()
 # ... register handlers ...
 
+
 @app.post("/webhook")
 async def webhook(request: Request):
     """Handle incoming Telegram webhook updates."""
@@ -920,14 +960,14 @@ async def webhook(request: Request):
     secret = request.headers.get("X-Telegram-Bot-Api-Secret-Token")
     if not secret or not hmac.compare_digest(secret, WEBHOOK_SECRET):
         raise HTTPException(status_code=403, detail="Forbidden")
-    
+
     # Parse update
     data = await request.json()
     update = Update.de_json(data, application.bot)
-    
+
     # Process update
     await application.process_update(update)
-    
+
     return {"ok": True}
 
 
@@ -948,19 +988,20 @@ from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
+
 @app.route("/webhook", methods=["POST"])
 def webhook():
     # Verify secret token
     secret = request.headers.get("X-Telegram-Bot-Api-Secret-Token")
     if secret != WEBHOOK_SECRET:
         return jsonify({"error": "Forbidden"}), 403
-    
+
     data = request.get_json()
     update = Update.de_json(data, bot)
-    
+
     # Process synchronously or queue for async processing
     application.process_update(update)
-    
+
     return jsonify({"ok": True})
 ```
 
@@ -1009,11 +1050,12 @@ import secrets
 # In-memory rate limiter for deep link usage
 deep_link_usage: dict[int, list[float]] = {}
 
+
 def validate_deep_link_payload(payload: str) -> str:
     """Validate deep link payload format."""
     if not payload or len(payload) > 64:
         raise ValueError("Invalid payload length")
-    if not re.match(r'^[A-Za-z0-9_\-]+$', payload):
+    if not re.match(r"^[A-Za-z0-9_\-]+$", payload):
         raise ValueError("Invalid payload characters")
     return payload
 
@@ -1021,20 +1063,19 @@ def validate_deep_link_payload(payload: str) -> str:
 def check_deep_link_rate_limit(user_id: int, max_per_hour: int = 10) -> bool:
     """Rate limit deep link usage per user."""
     import time
+
     now = time.time()
     hour_ago = now - 3600
-    
+
     if user_id not in deep_link_usage:
         deep_link_usage[user_id] = []
-    
+
     # Clean old entries
-    deep_link_usage[user_id] = [
-        t for t in deep_link_usage[user_id] if t > hour_ago
-    ]
-    
+    deep_link_usage[user_id] = [t for t in deep_link_usage[user_id] if t > hour_ago]
+
     if len(deep_link_usage[user_id]) >= max_per_hour:
         return False
-    
+
     deep_link_usage[user_id].append(now)
     return True
 
@@ -1042,30 +1083,30 @@ def check_deep_link_rate_limit(user_id: int, max_per_hour: int = 10) -> bool:
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle /start with deep link payload."""
     user_id = update.effective_user.id
-    
+
     # Rate limit
     if not check_deep_link_rate_limit(user_id):
         await update.message.reply_text("Too many requests. Try again later.")
         return
-    
+
     payload = context.args[0] if context.args else None
-    
+
     if payload:
         try:
             validated = validate_deep_link_payload(payload)
         except ValueError:
             await update.message.reply_text("Invalid start link.")
             return
-        
+
         # Map payload to actions — NEVER execute arbitrary commands
         ACTION_MAP = {
             "ref": handle_referral,
             "verify": handle_verification,
             "settings": handle_settings_link,
         }
-        
+
         prefix = validated.split("_", 1)[0] if "_" in validated else validated
-        
+
         if prefix in ACTION_MAP:
             await ACTION_MAP[prefix](update, context, validated)
         else:
@@ -1083,10 +1124,12 @@ async def start(update, context):
         command = context.args[0]
         await getattr(context.bot, command)()  # DANGEROUS!
 
+
 # ❌ NEVER — Execute code from deep link
 async def start(update, context):
     if context.args:
         eval(context.args[0])  # CRITICAL VULNERABILITY
+
 
 # ✅ SAFE — Whitelisted action mapping
 async def start(update, context):
@@ -1146,36 +1189,37 @@ import re
 from collections import defaultdict, deque
 import time
 
+
 class SpamDetector:
     """Simple spam detection based on frequency and content analysis."""
-    
+
     def __init__(self):
         self.user_messages: dict[int, deque] = defaultdict(lambda: deque(maxlen=100))
         self.warning_count: dict[int, int] = defaultdict(int)
-    
+
     def analyze(self, user_id: int, text: str) -> dict:
         """Analyze message for spam indicators."""
         now = time.time()
         self.user_messages[user_id].append(now)
-        
+
         indicators = {
             "is_spam": False,
             "reasons": [],
             "confidence": 0.0,
         }
-        
+
         # Check 1: Message frequency (more than 10 messages in 10 seconds)
         recent = [t for t in self.user_messages[user_id] if now - t < 10]
         if len(recent) > 10:
             indicators["reasons"].append("high_frequency")
             indicators["confidence"] += 0.4
-        
+
         # Check 2: Excessive URLs (more than 3)
-        url_count = len(re.findall(r'https?://\S+', text))
+        url_count = len(re.findall(r"https?://\S+", text))
         if url_count > 3:
             indicators["reasons"].append("excessive_urls")
             indicators["confidence"] += 0.3
-        
+
         # Check 3: ALL CAPS (>80% uppercase, min 10 chars)
         alpha_chars = [c for c in text if c.isalpha()]
         if alpha_chars and len(alpha_chars) >= 10:
@@ -1183,25 +1227,25 @@ class SpamDetector:
             if upper_ratio > 0.8:
                 indicators["reasons"].append("excessive_caps")
                 indicators["confidence"] += 0.1
-        
+
         # Check 4: Repeated characters (e.g., "AAAAAAAA")
-        if re.search(r'(.)\1{5,}', text):
+        if re.search(r"(.)\1{5,}", text):
             indicators["reasons"].append("repeated_chars")
             indicators["confidence"] += 0.1
-        
+
         # Check 5: Known spam patterns
         spam_keywords = [
-            r'free\s+(money|crypto|bitcoin|gift)',
-            r'click\s+(here|now|this\s+link)',
-            r'limited\s+time\s+offer',
-            r'earn\s+\$?\d+.*per\s+(day|hour|week)',
+            r"free\s+(money|crypto|bitcoin|gift)",
+            r"click\s+(here|now|this\s+link)",
+            r"limited\s+time\s+offer",
+            r"earn\s+\$?\d+.*per\s+(day|hour|week)",
         ]
         for pattern in spam_keywords:
             if re.search(pattern, text, re.IGNORECASE):
                 indicators["reasons"].append("spam_keywords")
                 indicators["confidence"] += 0.3
                 break
-        
+
         indicators["is_spam"] = indicators["confidence"] >= 0.5
         return indicators
 
@@ -1216,38 +1260,39 @@ async def anti_spam_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Check incoming messages for spam in groups."""
     if not update.message or not update.message.text:
         return
-    
+
     user_id = update.effective_user.id
     chat_id = update.effective_chat.id
     text = update.message.text
-    
+
     result = spam_detector.analyze(user_id, text)
-    
+
     if result["is_spam"]:
         # Delete the message
         await update.message.delete()
-        
+
         # Warn the user
         spam_detector.warning_count[user_id] += 1
-        
+
         if spam_detector.warning_count[user_id] >= 3:
             # Mute the user for 24 hours
             until_date = int(time.time()) + 86400
             await context.bot.restrict_chat_member(
-                chat_id, user_id,
+                chat_id,
+                user_id,
                 permissions=ChatPermissions(can_send_messages=False),
                 until_date=until_date,
             )
             await context.bot.send_message(
                 chat_id,
-                f"User {update.effective_user.first_name} muted for 24h (repeated spam)."
+                f"User {update.effective_user.first_name} muted for 24h (repeated spam).",
             )
         else:
             await context.bot.send_message(
                 chat_id,
                 f"⚠️ Warning {update.effective_user.first_name}: "
                 f"Spam detected ({', '.join(result['reasons'])}). "
-                f"Warning {spam_detector.warning_count[user_id]}/3."
+                f"Warning {spam_detector.warning_count[user_id]}/3.",
             )
 ```
 
@@ -1259,12 +1304,14 @@ async def report_spam(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not update.message.reply_to_message:
         await update.message.reply_text("Reply to a message to report it.")
         return
-    
+
     # Verify caller is admin
-    if not await is_chat_admin(context, update.effective_chat.id, update.effective_user.id):
+    if not await is_chat_admin(
+        context, update.effective_chat.id, update.effective_user.id
+    ):
         await update.message.reply_text("Admin only.")
         return
-    
+
     try:
         await context.bot.report_chat(
             chat_id=update.effective_chat.id,
@@ -1296,14 +1343,12 @@ processing_semaphore = asyncio.Semaphore(MAX_CONCURRENT_TASKS)
 
 def with_timeout(timeout: float = MAX_PROCESSING_TIME_SECONDS):
     """Decorator that enforces a processing timeout."""
+
     def decorator(func):
         @wraps(func)
         async def wrapper(update: Update, context: ContextTypes.DEFAULT_TYPE):
             try:
-                return await asyncio.wait_for(
-                    func(update, context),
-                    timeout=timeout
-                )
+                return await asyncio.wait_for(func(update, context), timeout=timeout)
             except asyncio.TimeoutError:
                 logger.warning(
                     f"Handler {func.__name__} timed out after {timeout}s "
@@ -1312,16 +1357,20 @@ def with_timeout(timeout: float = MAX_PROCESSING_TIME_SECONDS):
                 if update.message:
                     await update.message.reply_text("⚠️ Operation timed out.")
             return None
+
         return wrapper
+
     return decorator
 
 
 def with_semaphore(func):
     """Decorator that limits concurrent execution."""
+
     @wraps(func)
     async def wrapper(update: Update, context: ContextTypes.DEFAULT_TYPE):
         async with processing_semaphore:
             return await func(update, context)
+
     return wrapper
 
 
@@ -1341,6 +1390,7 @@ from telegram.ext import ConversationHandler
 
 # Timeout for conversation states (e.g., 5 minutes)
 CONVERSATION_TIMEOUT = 300
+
 
 async def timeout_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle conversation timeout."""
@@ -1366,6 +1416,7 @@ conv_handler = ConversationHandler(
 import aiohttp
 
 API_TIMEOUT = aiohttp.ClientTimeout(total=10)  # 10 second timeout
+
 
 async def safe_external_api_call(url: str, params: dict = None) -> dict | None:
     """Make an external API call with timeout and error handling."""
@@ -1407,36 +1458,39 @@ async def safe_external_api_call(url: str, params: dict = None) -> dict | None:
 import logging
 import re
 
+
 class SensitiveDataFilter(logging.Filter):
     """Filter that redacts sensitive data from log records."""
-    
+
     PATTERNS = [
         # Bot token pattern
-        (re.compile(r'\d{9,10}:[A-Za-z0-9_-]{35}'), '[REDACTED_TOKEN]'),
+        (re.compile(r"\d{9,10}:[A-Za-z0-9_-]{35}"), "[REDACTED_TOKEN]"),
         # Email addresses
-        (re.compile(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}'), '[REDACTED_EMAIL]'),
+        (
+            re.compile(r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"),
+            "[REDACTED_EMAIL]",
+        ),
         # Phone numbers (simple pattern)
-        (re.compile(r'\+?\d{10,15}'), '[REDACTED_PHONE]'),
+        (re.compile(r"\+?\d{10,15}"), "[REDACTED_PHONE]"),
         # Credit card numbers (simple pattern)
-        (re.compile(r'\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}'), '[REDACTED_CARD]'),
+        (re.compile(r"\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}"), "[REDACTED_CARD]"),
         # IP addresses (optional — may be needed for security logs)
-        (re.compile(r'\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b'), '[REDACTED_IP]'),
+        (re.compile(r"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b"), "[REDACTED_IP]"),
     ]
-    
+
     def __init__(self, redact_pii: bool = True):
         super().__init__()
         self.redact_pii = redact_pii
-    
+
     def filter(self, record: logging.LogRecord) -> bool:
         if isinstance(record.msg, str):
             record.msg = self._redact(record.msg)
         if record.args and isinstance(record.args, tuple):
             record.args = tuple(
-                self._redact(str(a)) if isinstance(a, str) else a
-                for a in record.args
+                self._redact(str(a)) if isinstance(a, str) else a for a in record.args
             )
         return True
-    
+
     def _redact(self, text: str) -> str:
         for pattern, replacement in self.PATTERNS:
             text = pattern.sub(replacement, text)
@@ -1447,13 +1501,13 @@ def setup_logging(level: str = "INFO", redact_pii: bool = True):
     """Configure secure logging."""
     handler = logging.StreamHandler()
     handler.addFilter(SensitiveDataFilter(redact_pii=redact_pii))
-    
+
     formatter = logging.Formatter(
         fmt="%(asctime)s | %(levelname)-8s | %(name)s | %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S"
+        datefmt="%Y-%m-%d %H:%M:%S",
     )
     handler.setFormatter(formatter)
-    
+
     root_logger = logging.getLogger()
     root_logger.handlers.clear()
     root_logger.addHandler(handler)
@@ -1476,9 +1530,10 @@ logger.info("Contact: john@example.com")  # Email redacted
 import json
 import logging
 
+
 class StructuredFormatter(logging.Formatter):
     """JSON structured logging for production."""
-    
+
     def format(self, record: logging.LogRecord) -> str:
         log_entry = {
             "timestamp": self.formatTime(record),
@@ -1486,7 +1541,7 @@ class StructuredFormatter(logging.Formatter):
             "logger": record.name,
             "message": record.getMessage(),
         }
-        
+
         # Add extra fields if present
         if hasattr(record, "user_id"):
             log_entry["user_id"] = record.user_id
@@ -1496,7 +1551,7 @@ class StructuredFormatter(logging.Formatter):
             log_entry["handler"] = record.handler
         if hasattr(record, "duration_ms"):
             log_entry["duration_ms"] = record.duration_ms
-        
+
         return json.dumps(log_entry)
 ```
 
@@ -1509,11 +1564,12 @@ from pathlib import Path
 
 LOG_RETENTION_DAYS = 30  # Retain logs for 30 days
 
+
 def cleanup_old_logs(log_dir: str = "logs", retention_days: int = LOG_RETENTION_DAYS):
     """Delete log files older than retention period."""
     cutoff = time.time() - (retention_days * 86400)
     log_path = Path(log_dir)
-    
+
     for log_file in log_path.glob("*.log*"):
         if log_file.stat().st_mtime < cutoff:
             log_file.unlink()
@@ -1535,7 +1591,7 @@ user_data = {
     "username": user.username,
     "first_name": user.first_name,
     "last_name": user.last_name,
-    "phone": user.phone_number,     # Don't store unless necessary
+    "phone": user.phone_number,  # Don't store unless necessary
     "language_code": user.language_code,
     "is_premium": user.is_premium,
 }
@@ -1584,23 +1640,21 @@ encrypted = encrypt_user_data(sensitive_data)
 async def delete_my_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle /deletedata command — GDPR right to deletion."""
     user_id = update.effective_user.id
-    
+
     try:
         # Delete from all data stores
         await delete_user_from_database(user_id)
         await delete_user_from_cache(user_id)
         await delete_user_files(user_id)
-        
+
         await update.message.reply_text(
             "✅ All your data has been permanently deleted."
         )
-        
+
         logger.info(f"User data deleted: user_id={user_id}")
     except Exception as e:
         logger.error(f"Data deletion failed for user_id={user_id}: {e}")
-        await update.message.reply_text(
-            "⚠️ An error occurred. Please contact support."
-        )
+        await update.message.reply_text("⚠️ An error occurred. Please contact support.")
 ```
 
 ### 13.4 GDPR Compliance Checklist
@@ -1633,64 +1687,59 @@ from urllib.parse import parse_qs, unquote
 
 BOT_TOKEN = os.environ["BOT_TOKEN"]
 
+
 def validate_webapp_initdata(init_data: str, bot_token: str) -> dict:
     """Validate Telegram Mini App initData.
-    
+
     Args:
         init_data: The initData string from the Mini App.
         bot_token: The bot's token.
-    
+
     Returns:
         Parsed and validated data dictionary.
-    
+
     Raises:
         ValueError: If validation fails.
     """
     # Parse the initData as URL-encoded form data
     parsed = parse_qs(init_data)
-    
+
     # Extract and remove the hash
     if "hash" not in parsed:
         raise ValueError("Missing hash in initData")
-    
+
     received_hash = parsed.pop("hash")[0]
-    
+
     # Sort remaining parameters and create data-check-string
     data_check_pairs = []
     for key, values in sorted(parsed.items()):
         for value in values:
             data_check_pairs.append(f"{key}={value}")
-    
+
     data_check_string = "\n".join(data_check_pairs)
-    
+
     # Create secret key from bot token using HMAC-SHA256
-    secret_key = hmac.new(
-        b"WebAppData",
-        bot_token.encode(),
-        hashlib.sha256
-    ).digest()
-    
+    secret_key = hmac.new(b"WebAppData", bot_token.encode(), hashlib.sha256).digest()
+
     # Compute expected hash
     expected_hash = hmac.new(
-        secret_key,
-        data_check_string.encode(),
-        hashlib.sha256
+        secret_key, data_check_string.encode(), hashlib.sha256
     ).hexdigest()
-    
+
     # Compare hashes (constant-time comparison)
     if not hmac.compare_digest(received_hash, expected_hash):
         raise ValueError("Invalid initData hash")
-    
+
     # Check auth_date freshness (within 24 hours)
     auth_date = int(parsed.get("auth_date", [0])[0])
     if time.time() - auth_date > 86400:
         raise ValueError("initData expired (auth_date > 24 hours old)")
-    
+
     # Parse and return validated data
     result = {}
     for key, values in parsed.items():
         result[key] = values[0] if len(values) == 1 else values
-    
+
     return result
 
 
@@ -1699,11 +1748,11 @@ def validate_webapp_initdata(init_data: str, bot_token: str) -> dict:
 async def validate_session(request: Request):
     body = await request.json()
     init_data = body.get("init_data")
-    
+
     try:
         validated = validate_webapp_initdata(init_data, BOT_TOKEN)
         user_id = json.loads(validated.get("user", "{}")).get("id")
-        
+
         return {"valid": True, "user_id": user_id}
     except ValueError as e:
         return {"valid": False, "error": str(e)}
@@ -1747,7 +1796,9 @@ async def security_headers(request: Request, call_next):
     response.headers["Content-Security-Policy"] = "default-src 'self'"
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
-    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    response.headers["Strict-Transport-Security"] = (
+        "max-age=31536000; includeSubDomains"
+    )
     return response
 ```
 

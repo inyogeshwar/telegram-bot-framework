@@ -40,14 +40,15 @@ NAME, AGE, LOCATION = range(3)
 
 # Reply keyboards
 reply_keyboard = [["Yes", "No"]]
-markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True)
+markup = ReplyKeyboardMarkup(
+    reply_keyboard, one_time_keyboard=True, resize_keyboard=True
+)
 
 
 async def start_registration(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Start the registration conversation."""
     await update.message.reply_text(
-        "Let's get you registered!\n\n"
-        "What's your name?",
+        "Let's get you registered!\n\nWhat's your name?",
         reply_markup=ReplyKeyboardRemove(),
     )
     return NAME
@@ -57,8 +58,7 @@ async def name(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Store name and ask for age."""
     context.user_data["name"] = update.message.text
     await update.message.reply_text(
-        f"Nice to meet you, {update.message.text}!\n\n"
-        "How old are you?"
+        f"Nice to meet you, {update.message.text}!\n\nHow old are you?"
     )
     return AGE
 
@@ -71,10 +71,7 @@ async def age(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         return AGE
 
     context.user_data["age"] = int(text)
-    await update.message.reply_text(
-        "Great!\n\n"
-        "Where are you located? (City, Country)"
-    )
+    await update.message.reply_text("Great!\n\nWhere are you located? (City, Country)")
     return LOCATION
 
 

@@ -153,6 +153,7 @@ async def set_webhook() -> None:
 
 if __name__ == "__main__":
     import asyncio
+
     asyncio.run(set_webhook())
 ```
 
@@ -522,7 +523,10 @@ def lambda_handler(event: dict, context) -> dict:
     """Handle incoming API Gateway events."""
     try:
         if event.get("httpMethod") != "POST":
-            return {"statusCode": 405, "body": json.dumps({"error": "Method not allowed"})}
+            return {
+                "statusCode": 405,
+                "body": json.dumps({"error": "Method not allowed"}),
+            }
 
         headers = event.get("headers", {})
         secret = headers.get("x-telegram-bot-api-secret-token")
@@ -533,13 +537,17 @@ def lambda_handler(event: dict, context) -> dict:
         update = Update.de_json(body, application.bot)
 
         import asyncio
+
         asyncio.run(application.process_update(update))
 
         return {"statusCode": 200, "body": json.dumps({"status": "ok"})}
 
     except Exception as e:
         logger.error("Lambda error: %s", e)
-        return {"statusCode": 500, "body": json.dumps({"error": "Internal server error"})}
+        return {
+            "statusCode": 500,
+            "body": json.dumps({"error": "Internal server error"}),
+        }
 ```
 
 #### SAM Template
@@ -866,6 +874,7 @@ LOG_LEVEL=DEBUG
 import os
 from pathlib import Path
 
+
 def load_env() -> None:
     """Load .env file if it exists (development only)."""
     env_path = Path(__file__).parent / ".env"
@@ -968,10 +977,10 @@ DATABASE_URL = "postgresql://user:pass@host:5432/botdb"
 engine = create_engine(
     DATABASE_URL,
     poolclass=QueuePool,
-    pool_size=10,        # number of persistent connections
-    max_overflow=20,     # temporary overflow connections
-    pool_timeout=30,     # seconds to wait for a connection
-    pool_recycle=1800,   # recycle connections after 30 minutes
+    pool_size=10,  # number of persistent connections
+    max_overflow=20,  # temporary overflow connections
+    pool_timeout=30,  # seconds to wait for a connection
+    pool_recycle=1800,  # recycle connections after 30 minutes
     pool_pre_ping=True,  # verify connections before use
 )
 
@@ -1110,6 +1119,7 @@ async def detailed_health() -> dict:
     # Check database connectivity
     try:
         from sqlalchemy import text
+
         with engine.connect() as conn:
             conn.execute(text("SELECT 1"))
     except Exception as e:
@@ -1183,6 +1193,7 @@ _metrics: dict[str, list[float]] = {
 
 def track_metric(metric_name: str) -> Callable:
     """Decorator to track execution metrics."""
+
     def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
         @wraps(func)
         async def wrapper(*args, **kwargs) -> Any:
@@ -1202,6 +1213,7 @@ def track_metric(metric_name: str) -> Callable:
                 raise
 
         return wrapper
+
     return decorator
 
 

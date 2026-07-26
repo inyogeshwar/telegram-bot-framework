@@ -1,30 +1,40 @@
 {
-  "$schema": "https://opencode.ai/schema/config.json",
+  "$schema": "https://opencode.ai/config.json",
   "name": "telegram-bot-framework",
   "description": "Telegram Bot Framework - AI-first developer handbook for python-telegram-bot",
   "version": "1.0.0",
   "model": "opencode/big-pickle",
   "temperature": 0.7,
   "maxTokens": 8192,
-  "systemPrompt": "You are an expert Python developer specializing in Telegram bot development using the python-telegram-bot library (v20+/v21.x). Follow the documentation in docs/ for guidance. Always use async/await, type hints, error handling, and logging.",
+  "instructions": [
+    "CONTRIBUTING.md",
+    "SECURITY.md",
+    "AI.md",
+    "docs/**/*.md",
+    "examples/**/*.py"
+  ],
   "references": {
     "ptb-docs": {
       "repository": "python-telegram-bot/python-telegram-bot",
       "branch": "master",
-      "description": "Official python-telegram-bot library source and documentation"
+      "description": "Use for python-telegram-bot library source, API reference, and implementation details"
     },
     "telegram-bot-api": {
       "repository": "Telegram/Telegram-Bot-API",
       "branch": "main",
-      "description": "Official Telegram Bot API documentation and specifications"
+      "description": "Use for official Telegram Bot API documentation and specifications"
     },
     "handbook": {
       "path": "./docs",
-      "description": "This repository's 21-chapter developer handbook"
+      "description": "Use for this repository's 22-chapter developer handbook and tutorials"
     },
     "examples": {
       "path": "./examples",
-      "description": "Production-quality bot code examples"
+      "description": "Use for production-quality bot code examples and patterns"
+    },
+    "templates": {
+      "path": "./templates",
+      "description": "Use for bot project templates and scaffolding"
     }
   },
   "formatter": {
@@ -33,19 +43,144 @@
       "extensions": [".py", ".pyi"]
     }
   },
-  "tools": {
-    "enabled": ["read", "write", "edit", "bash", "glob", "grep", "skill"],
-    "disabled": []
-  },
   "permission": {
-    "skill": {
-      "*": "allow"
+    "read": "allow",
+    "edit": "allow",
+    "bash": "ask",
+    "grep": "allow",
+    "glob": "allow",
+    "skill": "allow",
+    "todowrite": "allow",
+    "webfetch": "allow",
+    "websearch": "allow",
+    "question": "allow",
+    "lsp": "deny"
+  },
+  "agent": {
+    "build": {
+      "mode": "primary",
+      "model": "opencode/big-pickle",
+      "temperature": 0.3,
+      "permission": {
+        "read": "allow",
+        "edit": "allow",
+        "bash": "allow",
+        "grep": "allow",
+        "glob": "allow",
+        "skill": "allow",
+        "todowrite": "allow",
+        "webfetch": "allow",
+        "websearch": "allow"
+      }
+    },
+    "plan": {
+      "mode": "primary",
+      "model": "opencode/big-pickle",
+      "temperature": 0.1,
+      "permission": {
+        "read": "allow",
+        "edit": "ask",
+        "bash": "ask",
+        "grep": "allow",
+        "glob": "allow",
+        "skill": "allow",
+        "webfetch": "allow"
+      }
+    },
+    "code-reviewer": {
+      "description": "Reviews Python code for correctness, security, performance, and style violations",
+      "mode": "subagent",
+      "model": "opencode/big-pickle",
+      "temperature": 0.1,
+      "permission": {
+        "read": "allow",
+        "edit": "deny",
+        "bash": "deny",
+        "grep": "allow",
+        "glob": "allow"
+      }
+    },
+    "security-auditor": {
+      "description": "Performs security audits and identifies vulnerabilities",
+      "mode": "subagent",
+      "model": "opencode/big-pickle",
+      "temperature": 0.1,
+      "permission": {
+        "read": "allow",
+        "edit": "deny",
+        "bash": {
+          "*": "deny",
+          "python *": "allow",
+          "pip-audit *": "allow"
+        },
+        "grep": "allow",
+        "glob": "allow"
+      }
+    },
+    "telegram-bot-creator": {
+      "description": "Creates complete Telegram bot implementations",
+      "mode": "subagent",
+      "model": "opencode/big-pickle",
+      "temperature": 0.3,
+      "permission": {
+        "read": "allow",
+        "edit": "allow",
+        "bash": {
+          "*": "ask",
+          "python *": "allow",
+          "pip install *": "allow",
+          "ruff *": "allow"
+        },
+        "grep": "allow",
+        "glob": "allow",
+        "webfetch": "allow",
+        "skill": "allow"
+      }
     }
   },
-  "permissions": {
-    "allowFileRead": true,
-    "allowFileWrite": true,
-    "allowBash": true,
-    "allowNetwork": false
+  "command": {
+    "test": {
+      "template": "Run the full test suite with coverage report:\n\n```bash\npytest -v --cov=. --cov-report=term-missing\n```\n\nFocus on:\n1. Any failing tests\n2. Coverage gaps\n3. Test quality issues\n4. Suggest fixes for failures",
+      "description": "Run tests with coverage",
+      "agent": "build"
+    },
+    "lint": {
+      "template": "Run linting and formatting checks:\n\n```bash\nruff check .\nruff format --check .\n```\n\nReport:\n1. Any linting errors\n2. Formatting issues\n3. Suggest auto-fixes",
+      "description": "Lint and format code",
+      "agent": "build"
+    },
+    "typecheck": {
+      "template": "Run mypy type checker:\n\n```bash\nmypy .\n```\n\nReport:\n1. Type errors\n2. Missing type hints\n3. Suggest fixes",
+      "description": "Type check code",
+      "agent": "build"
+    },
+    "review": {
+      "template": "Review recent code changes:\n\n!`git diff HEAD~5`\n\nFocus on:\n1. Code quality\n2. Security issues\n3. Performance\n4. Type hints\n5. Error handling",
+      "description": "Review code changes",
+      "agent": "code-reviewer",
+      "subtask": true
+    },
+    "security": {
+      "template": "Perform security audit:\n\n!`find . -name \"*.py\" -type f`\n\nCheck for:\n1. Hardcoded secrets\n2. SQL injection\n3. Input validation\n4. Dependency vulnerabilities",
+      "description": "Security audit",
+      "agent": "security-auditor",
+      "subtask": true
+    },
+    "create-bot": {
+      "template": "Create a new Telegram bot named $ARGUMENTS with:\n1. Async/await patterns\n2. Type hints\n3. Error handling\n4. Logging\n5. README",
+      "description": "Create new Telegram bot",
+      "agent": "telegram-bot-creator",
+      "subtask": true
+    },
+    "deploy": {
+      "template": "Generate Docker configuration:\n1. Dockerfile\n2. docker-compose.yml\n3. .dockerignore\n\nInclude health checks and security.",
+      "description": "Deploy bot with Docker",
+      "agent": "build"
+    },
+    "status": {
+      "template": "Show project status:\n\n!`git status`\n\n!`git log --oneline -5`\n\n!`ruff check . --statistics`",
+      "description": "Show project status",
+      "agent": "build"
+    }
   }
 }

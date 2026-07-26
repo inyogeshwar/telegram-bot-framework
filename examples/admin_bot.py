@@ -23,7 +23,6 @@ import sys
 from telegram import Update
 from telegram.ext import (
     ApplicationBuilder,
-    CallbackQueryHandler,
     CommandHandler,
     ContextTypes,
     MessageHandler,
@@ -65,7 +64,9 @@ async def ban_user(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     try:
         await update.message.chat.ban_member(user.id)
-        await update.message.reply_text(f"Banned {user.mention_html()}.", parse_mode="HTML")
+        await update.message.reply_text(
+            f"Banned {user.mention_html()}.", parse_mode="HTML"
+        )
     except Exception as e:
         logger.error("Failed to ban user: %s", e)
         await update.message.reply_text("Failed to ban user. Am I an admin?")
@@ -84,7 +85,9 @@ async def unban_user(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
     try:
         await update.message.chat.unban_member(user.id)
-        await update.message.reply_text(f"Unbanned {user.mention_html()}.", parse_mode="HTML")
+        await update.message.reply_text(
+            f"Unbanned {user.mention_html()}.", parse_mode="HTML"
+        )
     except Exception as e:
         logger.error("Failed to unban user: %s", e)
         await update.message.reply_text("Failed to unban user.")
@@ -106,7 +109,9 @@ async def mute_user(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
         permissions = ChatPermissions(can_send_messages=False)
         await update.message.chat.restrict_member(user.id, permissions)
-        await update.message.reply_text(f"Muted {user.mention_html()}.", parse_mode="HTML")
+        await update.message.reply_text(
+            f"Muted {user.mention_html()}.", parse_mode="HTML"
+        )
     except Exception as e:
         logger.error("Failed to mute user: %s", e)
         await update.message.reply_text("Failed to mute user. Am I an admin?")
@@ -128,7 +133,9 @@ async def unmute_user(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
 
         permissions = ChatPermissions(can_send_messages=True)
         await update.message.chat.restrict_member(user.id, permissions)
-        await update.message.reply_text(f"Unmuted {user.mention_html()}.", parse_mode="HTML")
+        await update.message.reply_text(
+            f"Unmuted {user.mention_html()}.", parse_mode="HTML"
+        )
     except Exception as e:
         logger.error("Failed to unmute user: %s", e)
         await update.message.reply_text("Failed to unmute user.")

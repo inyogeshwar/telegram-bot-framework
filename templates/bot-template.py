@@ -1,6 +1,3 @@
-# Bot Template
-
-```python
 #!/usr/bin/env python3
 """Bot Name — Description.
 
@@ -63,9 +60,7 @@ def main() -> None:
 
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("help", help_command))
-    application.add_handler(
-        MessageHandler(filters.TEXT & ~filters.COMMAND, echo)
-    )
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
 
     application.add_error_handler(error_handler)
 
@@ -75,4 +70,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-```

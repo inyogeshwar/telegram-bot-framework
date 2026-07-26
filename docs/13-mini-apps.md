@@ -114,7 +114,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-async def webapp_data_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def webapp_data_handler(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> None:
     """Handle data received from a Mini App."""
     message = update.message
     if not message or not message.web_app_data:
@@ -123,8 +125,11 @@ async def webapp_data_handler(update: Update, context: ContextTypes.DEFAULT_TYPE
     raw_data: str = message.web_app_data.data
     button_text: str = message.web_app_data.button_text
 
-    logger.info("Received Mini App data from user %s (button: %s)",
-                message.from_user.id, button_text)
+    logger.info(
+        "Received Mini App data from user %s (button: %s)",
+        message.from_user.id,
+        button_text,
+    )
 
     try:
         data = json.loads(raw_data)
@@ -272,9 +277,7 @@ def validate_webapp_init_data(init_data: str, bot_token: str) -> dict[str, str] 
         return None
 
     # Build the data check string
-    data_check_string = "\n".join(
-        f"{k}={v[0]}" for k, v in sorted(parsed.items())
-    )
+    data_check_string = "\n".join(f"{k}={v[0]}" for k, v in sorted(parsed.items()))
 
     # Compute the secret key
     secret_key = hmac.new(
@@ -368,6 +371,7 @@ INIT_DATA_MAX_AGE = 86400
 
 # ─── initData Validation ────────────────────────────────────────
 
+
 def validate_init_data(init_data: str) -> dict[str, str] | None:
     """Validate Telegram Mini App initData."""
     try:
@@ -379,13 +383,9 @@ def validate_init_data(init_data: str) -> dict[str, str] | None:
     if not received_hash:
         return None
 
-    data_check_string = "\n".join(
-        f"{k}={v[0]}" for k, v in sorted(parsed.items())
-    )
+    data_check_string = "\n".join(f"{k}={v[0]}" for k, v in sorted(parsed.items()))
 
-    secret_key = hmac.new(
-        b"WebAppData", BOT_TOKEN.encode(), hashlib.sha256
-    ).digest()
+    secret_key = hmac.new(b"WebAppData", BOT_TOKEN.encode(), hashlib.sha256).digest()
 
     computed = hmac.new(
         secret_key, data_check_string.encode(), hashlib.sha256
@@ -403,6 +403,7 @@ def validate_init_data(init_data: str) -> dict[str, str] | None:
 
 # ─── API Routes ─────────────────────────────────────────────────
 
+
 class OrderRequest(BaseModel):
     init_data: str
     product_id: str
@@ -418,7 +419,9 @@ async def create_order(req: OrderRequest):
         raise HTTPException(status_code=401, detail="Unauthorized")
 
     user = json.loads(validated.get("user", "{}"))
-    logger.info("Order from user %s: %s x%d", user.get("id"), req.product_id, req.quantity)
+    logger.info(
+        "Order from user %s: %s x%d", user.get("id"), req.product_id, req.quantity
+    )
 
     return {
         "status": "created",
@@ -513,6 +516,7 @@ MINIAPP_HTML = """
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=443)
 ```
 
@@ -560,7 +564,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     )
 
 
-async def handle_webapp_data(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def handle_webapp_data(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> None:
     """Handle data received from the Mini App."""
     message = update.message
     if not message or not message.web_app_data:
@@ -583,7 +589,9 @@ def main() -> None:
     app = Application.builder().token(BOT_TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
-    app.add_handler(MessageHandler(filters.StatusUpdate.WEB_APP_DATA, handle_webapp_data))
+    app.add_handler(
+        MessageHandler(filters.StatusUpdate.WEB_APP_DATA, handle_webapp_data)
+    )
 
     logger.info("Bot started.")
     app.run_polling(allowed_updates=Update.ALL_TYPES)
@@ -702,17 +710,11 @@ def validate_login_widget(data: dict, bot_token: str) -> bool:
         return False
 
     # Build check string from all fields except hash
-    check_data = {
-        k: v for k, v in sorted(data.items()) if k != "hash"
-    }
-    data_check_string = "\n".join(
-        f"{k}={v}" for k, v in check_data.items()
-    )
+    check_data = {k: v for k, v in sorted(data.items()) if k != "hash"}
+    data_check_string = "\n".join(f"{k}={v}" for k, v in check_data.items())
 
     # Compute HMAC
-    secret_key = hmac.new(
-        b"WebAppData", bot_token.encode(), hashlib.sha256
-    ).digest()
+    secret_key = hmac.new(b"WebAppData", bot_token.encode(), hashlib.sha256).digest()
 
     computed = hmac.new(
         secret_key, data_check_string.encode(), hashlib.sha256

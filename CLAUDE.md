@@ -89,11 +89,11 @@ from telegram.ext import (
 
 ### Common Filters
 ```python
-filters.TEXT          # Text messages
-filters.COMMAND      # Commands
-filters.PHOTO        # Photos
-filters.VIDEO        # Videos
-filters.Document.ALL # Documents
+filters.TEXT  # Text messages
+filters.COMMAND  # Commands
+filters.PHOTO  # Photos
+filters.VIDEO  # Videos
+filters.Document.ALL  # Documents
 ```
 
 ### Keyboard Types

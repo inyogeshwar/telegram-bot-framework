@@ -82,10 +82,11 @@ async def handle_referral(
         await update.message.reply_text("You cannot refer yourself!")
         return
 
-    USER_PREFERENCES.setdefault(update.effective_user.id, {})["referred_by"] = referrer_id
+    USER_PREFERENCES.setdefault(update.effective_user.id, {})["referred_by"] = (
+        referrer_id
+    )
     await update.message.reply_text(
-        f"Welcome! You were referred by user #{referrer_id}.\n"
-        "You both receive a bonus!"
+        f"Welcome! You were referred by user #{referrer_id}.\nYou both receive a bonus!"
     )
     logger.info(
         "Referral: user %d referred by %d (code=%s)",
@@ -168,6 +169,7 @@ The `ContextTypes.DEFAULT_TYPE` (defaulting to `CallbackContext`) is the second 
 from telegram import Update
 from telegram.ext import ContextTypes
 
+
 async def command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     user_id = update.effective_user.id
 
@@ -199,12 +201,7 @@ from telegram.ext import ApplicationBuilder, PicklePersistence
 
 persistence = PicklePersistence(filepath="bot_data.pkl")
 
-app = (
-    ApplicationBuilder()
-    .token("BOT_TOKEN")
-    .persistence(persistence)
-    .build()
-)
+app = ApplicationBuilder().token("BOT_TOKEN").persistence(persistence).build()
 
 # Data is now automatically saved and loaded on restart
 # context.user_data, context.bot_data, context.chat_data
@@ -218,12 +215,7 @@ from telegram.ext import ApplicationBuilder, DictPersistence
 
 persistence = DictPersistence()
 
-app = (
-    ApplicationBuilder()
-    .token("BOT_TOKEN")
-    .persistence(persistence)
-    .build()
-)
+app = ApplicationBuilder().token("BOT_TOKEN").persistence(persistence).build()
 
 # Data lives in memory — lost on restart
 # Useful for unit testing and development
@@ -256,6 +248,7 @@ Execute a callback after a fixed delay.
 from datetime import timedelta
 from telegram import Update
 from telegram.ext import ContextTypes
+
 
 async def set_reminder(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Set a 1-hour reminder."""
@@ -296,6 +289,7 @@ Execute a callback at fixed intervals.
 ```python
 from telegram.ext import ContextTypes
 
+
 async def cleanup_old_messages(context: ContextTypes.DEFAULT_TYPE) -> None:
     """Runs every 30 minutes to clean up old messages."""
     # Perform cleanup logic
@@ -308,7 +302,7 @@ def schedule_cleanup(context: ContextTypes.DEFAULT_TYPE) -> None:
     context.job_queue.run_repeating(
         callback=cleanup_old_messages,
         interval=1800,  # 30 minutes in seconds
-        first=60,       # Start after 1 minute
+        first=60,  # Start after 1 minute
         name="message_cleanup",
     )
 ```
@@ -320,6 +314,7 @@ Execute a callback at a specific time every day.
 ```python
 from datetime import time, timezone
 from telegram.ext import ContextTypes
+
 
 async def daily_report(context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send daily report to the admin channel."""
@@ -361,6 +356,7 @@ def setup_daily_jobs(context: ContextTypes.DEFAULT_TYPE) -> None:
 from telegram import Update
 from telegram.ext import ContextTypes
 
+
 async def cancel_reminder(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Cancel all reminders for the current user in this chat."""
     current_jobs = context.job_queue.get_jobs_by_name(
@@ -391,12 +387,14 @@ logger = logging.getLogger(__name__)
 
 def job_error_handler(func):
     """Decorator to catch and log errors in job callbacks."""
+
     @functools.wraps(func)
     async def wrapper(context: ContextTypes.DEFAULT_TYPE):
         try:
             await func(context)
         except Exception as e:
             logger.error("Job '%s' failed: %s", context.job.name, e, exc_info=True)
+
     return wrapper
 
 
@@ -432,6 +430,7 @@ Ephemeral messages let the bot send **private responses to a specific user** wit
 ```python
 from telegram import Update
 from telegram.ext import ContextTypes
+
 
 async def handle_query(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send a private response in a group chat."""
@@ -502,6 +501,7 @@ Bots can send messages to other bots, enabling orchestration, microservices, and
 ```python
 from telegram import Update
 from telegram.ext import ContextTypes
+
 
 async def forward_to_analytics(
     update: Update, context: ContextTypes.DEFAULT_TYPE
@@ -615,6 +615,7 @@ Communities are groups of supergroups and channels managed together. Bots in com
 from telegram import Update
 from telegram.ext import ContextTypes
 
+
 async def community_update(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle bot being added/removed from a community."""
     status = update.chat_member.new_chat_member.status
@@ -660,46 +661,63 @@ from telegram.rich import (
     Link,
 )
 
+
 async def rich_response(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send a rich message with structured blocks."""
-    rich = RichMessage(blocks=[
-        Heading(level=2, text="Project Status"),
-        Paragraph(blocks=[
-            InlineStyle(text="All systems "),
-            Bold(text="operational"),
-            InlineStyle(text=". Last check: "),
-            InlineStyle(text="2026-07-26 10:30 UTC", italic=True),
-        ]),
-        Heading(level=3, text="Service Health"),
-        Table(rows=[
-            TableRow(cells=[
-                TableCell(text="Service", bold=True),
-                TableCell(text="Status", bold=True),
-                TableCell(text="Latency", bold=True),
-            ]),
-            TableRow(cells=[
-                TableCell(text="API Gateway"),
-                TableCell(text="✅ Up"),
-                TableCell(text="12ms"),
-            ]),
-            TableRow(cells=[
-                TableCell(text="Database"),
-                TableCell(text="✅ Up"),
-                TableCell(text="3ms"),
-            ]),
-            TableRow(cells=[
-                TableCell(text="Worker Pool"),
-                TableCell(text="⚠️ Degraded"),
-                TableCell(text="245ms"),
-            ]),
-        ]),
-        Heading(level=3, text="Recent Changes"),
-        List(items=[
-            ListItem(text="Deployed v2.4.1 — bug fixes"),
-            ListItem(text="Updated rate limiting config"),
-            ListItem(text="Added community support"),
-        ]),
-    ])
+    rich = RichMessage(
+        blocks=[
+            Heading(level=2, text="Project Status"),
+            Paragraph(
+                blocks=[
+                    InlineStyle(text="All systems "),
+                    Bold(text="operational"),
+                    InlineStyle(text=". Last check: "),
+                    InlineStyle(text="2026-07-26 10:30 UTC", italic=True),
+                ]
+            ),
+            Heading(level=3, text="Service Health"),
+            Table(
+                rows=[
+                    TableRow(
+                        cells=[
+                            TableCell(text="Service", bold=True),
+                            TableCell(text="Status", bold=True),
+                            TableCell(text="Latency", bold=True),
+                        ]
+                    ),
+                    TableRow(
+                        cells=[
+                            TableCell(text="API Gateway"),
+                            TableCell(text="✅ Up"),
+                            TableCell(text="12ms"),
+                        ]
+                    ),
+                    TableRow(
+                        cells=[
+                            TableCell(text="Database"),
+                            TableCell(text="✅ Up"),
+                            TableCell(text="3ms"),
+                        ]
+                    ),
+                    TableRow(
+                        cells=[
+                            TableCell(text="Worker Pool"),
+                            TableCell(text="⚠️ Degraded"),
+                            TableCell(text="245ms"),
+                        ]
+                    ),
+                ]
+            ),
+            Heading(level=3, text="Recent Changes"),
+            List(
+                items=[
+                    ListItem(text="Deployed v2.4.1 — bug fixes"),
+                    ListItem(text="Updated rate limiting config"),
+                    ListItem(text="Added community support"),
+                ]
+            ),
+        ]
+    )
 
     await update.message.reply_rich_message(rich)
 ```
@@ -712,6 +730,7 @@ When building AI-powered bots, you can stream partial responses as the AI genera
 from telegram import Update
 from telegram.rich import RichMessage, Block, Paragraph, CodeBlock
 from telegram.ext import ContextTypes
+
 
 async def ai_query(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle an AI query with streaming response."""
@@ -726,15 +745,21 @@ async def ai_query(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     async for chunk in stream_ai_response(query):
         collected += chunk
         # Update the draft with the latest content
-        await draft.edit(blocks=[
-            Paragraph(text=collected),
-            Paragraph(text="_Generating..._", italic=True) if not is_complete else [],
-        ])
+        await draft.edit(
+            blocks=[
+                Paragraph(text=collected),
+                Paragraph(text="_Generating..._", italic=True)
+                if not is_complete
+                else [],
+            ]
+        )
 
     # Finalize with the complete response
-    await draft.edit(blocks=[
-        Paragraph(text=collected),
-    ])
+    await draft.edit(
+        blocks=[
+            Paragraph(text=collected),
+        ]
+    )
 ```
 
 ### Block Types Reference
@@ -789,18 +814,13 @@ from telegram.ext import ApplicationBuilder, PicklePersistence
 # Create persistence with custom filepath
 persistence = PicklePersistence(
     filepath="bot_data.pkl",
-    store_bot_data=True,      # Persist context.bot_data
-    store_chat_data=True,      # Persist context.chat_data
-    store_user_data=True,      # Persist context.user_data
-    collect_files=False,       # Don't persist file objects
+    store_bot_data=True,  # Persist context.bot_data
+    store_chat_data=True,  # Persist context.chat_data
+    store_user_data=True,  # Persist context.user_data
+    collect_files=False,  # Don't persist file objects
 )
 
-app = (
-    ApplicationBuilder()
-    .token("BOT_TOKEN")
-    .persistence(persistence)
-    .build()
-)
+app = ApplicationBuilder().token("BOT_TOKEN").persistence(persistence).build()
 ```
 
 ### What Gets Persisted
@@ -819,6 +839,7 @@ app = (
 ```python
 from telegram import Update
 from telegram.ext import ContextTypes
+
 
 async def save_preference(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Save a user preference — automatically persisted."""
@@ -851,6 +872,7 @@ The commands menu is the popup that appears when a user types `/` in a chat with
 
 ```python
 from telegram import BotCommand, BotCommandScopeDefault
+
 
 async def set_bot_commands(bot) -> None:
     """Set the default commands shown in the / menu."""
@@ -1013,6 +1035,7 @@ class TokenBucketRateLimiter:
 # Usage
 limiter = TokenBucketRateLimiter(max_tokens=30, refill_rate=30.0)
 
+
 async def safe_send_message(bot, chat_id: int, text: str) -> None:
     """Send a message with rate limiting."""
     await limiter.acquire()
@@ -1058,9 +1081,7 @@ class SlidingWindowRateLimiter:
 
                 # Calculate wait time until the oldest request expires
                 wait_time = self.timestamps[0] + self.window_seconds - now
-                logger.debug(
-                    "Sliding window full — waiting %.2f seconds", wait_time
-                )
+                logger.debug("Sliding window full — waiting %.2f seconds", wait_time)
 
             await asyncio.sleep(wait_time)
 ```
@@ -1110,7 +1131,9 @@ logger = logging.getLogger(__name__)
 MAX_RETRIES = 3
 
 
-async def resilient_send(bot, chat_id: int, text: str, retries: int = MAX_RETRIES) -> bool:
+async def resilient_send(
+    bot, chat_id: int, text: str, retries: int = MAX_RETRIES
+) -> bool:
     """Send a message with automatic retry on rate limits."""
     for attempt in range(retries):
         try:
@@ -1127,7 +1150,7 @@ async def resilient_send(bot, chat_id: int, text: str, retries: int = MAX_RETRIE
             await asyncio.sleep(wait)
         except TimedOut:
             logger.warning("Request timed out (attempt %d/%d).", attempt + 1, retries)
-            await asyncio.sleep(2 ** attempt)
+            await asyncio.sleep(2**attempt)
         except Exception as e:
             logger.error("Unexpected error sending message: %s", e, exc_info=True)
             return False

@@ -32,11 +32,7 @@ from telegram.ext import ApplicationBuilder
 | `.post_stop(coroutine)` | Coroutine called after stop |
 
 ```python
-application = (
-    ApplicationBuilder()
-    .token("YOUR_BOT_TOKEN")
-    .build()
-)
+application = ApplicationBuilder().token("YOUR_BOT_TOKEN").build()
 ```
 
 | Application Method | Purpose |
@@ -61,9 +57,11 @@ Responds to messages starting with `/command`. Arguments available in `context.a
 ```python
 from telegram.ext import CommandHandler
 
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     user = update.effective_user
     await update.message.reply_html(rf"Hello {user.mention_html()}!")
+
 
 application.add_handler(CommandHandler("start", start))
 ```
@@ -75,9 +73,7 @@ Matches non-command messages based on a **filter**. The workhorse for text repli
 ```python
 from telegram.ext import MessageHandler, filters
 
-application.add_handler(
-    MessageHandler(filters.TEXT & ~filters.COMMAND, echo_callback)
-)
+application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo_callback))
 ```
 
 ### `CallbackQueryHandler`
@@ -87,11 +83,13 @@ Handles presses on inline keyboard buttons. Must always answer callback queries.
 ```python
 from telegram.ext import CallbackQueryHandler
 
+
 async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.callback_query
     await query.answer()
     if query.data == "option_a":
         await query.edit_message_text("Selected A")
+
 
 application.add_handler(CallbackQueryHandler(button_callback))
 application.add_handler(CallbackQueryHandler(handler, pattern=r"^delete_\d+$"))
@@ -105,16 +103,20 @@ Handles inline queries via `@yourbot query`.
 from telegram.ext import InlineQueryHandler
 from telegram import InlineQueryResultArticle, InputTextMessageContent
 
+
 async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.inline_query.query
     results = [
         InlineQueryResultArticle(
             id=query,
             title=f"Result for: {query}",
-            input_message_content=InputTextMessageContent(message_text=f"Result: {query}"),
+            input_message_content=InputTextMessageContent(
+                message_text=f"Result: {query}"
+            ),
         )
     ]
     await update.inline_query.answer(results, cache_time=300, is_personal=True)
+
 
 application.add_handler(InlineQueryHandler(inline_query))
 ```
@@ -126,9 +128,11 @@ Fires when a user selects an inline result.
 ```python
 from telegram.ext import ChosenInlineResultHandler
 
+
 async def chosen_result(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     result = update.chosen_inline_result
     logger.info("User %s selected result %s", result.from_user.id, result.result_id)
+
 
 application.add_handler(ChosenInlineResultHandler(chosen_result))
 ```
@@ -140,12 +144,14 @@ Fires when a user confirms a payment. Must respond within 10 seconds.
 ```python
 from telegram.ext import PreCheckoutQueryHandler
 
+
 async def pre_checkout(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.pre_checkout_query
     if query.invoice_payload == "order_123":
         await query.answer(ok=True)
     else:
         await query.answer(ok=False, error_message="Something went wrong.")
+
 
 application.add_handler(PreCheckoutQueryHandler(pre_checkout))
 ```
@@ -158,12 +164,16 @@ Fires when a user provides a shipping address.
 from telegram.ext import ShippingQueryHandler
 from telegram import ShippingOption, LabeledPrice
 
+
 async def shipping(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.shipping_query
     options = [
-        ShippingOption(id="standard", title="Standard", prices=[LabeledPrice("Standard", 150)]),
+        ShippingOption(
+            id="standard", title="Standard", prices=[LabeledPrice("Standard", 150)]
+        ),
     ]
     await query.answer(ok=True, shipping_options=options)
+
 
 application.add_handler(ShippingQueryHandler(shipping))
 ```
@@ -175,9 +185,16 @@ Handles answers to polls the bot created.
 ```python
 from telegram.ext import PollAnswerHandler
 
+
 async def poll_answer(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     answer = update.poll_answer
-    logger.info("User %s answered poll %s with options %s", answer.user.id, answer.poll_id, answer.option_ids)
+    logger.info(
+        "User %s answered poll %s with options %s",
+        answer.user.id,
+        answer.poll_id,
+        answer.option_ids,
+    )
+
 
 application.add_handler(PollAnswerHandler(poll_answer))
 ```
@@ -189,9 +206,11 @@ Handles updates when a poll the bot sent is updated.
 ```python
 from telegram.ext import PollHandler
 
+
 async def poll_update(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     poll = update.poll
     logger.info("Poll %s updated. Total votes: %d", poll.id, poll.total_voter_count)
+
 
 application.add_handler(PollHandler(poll_update))
 ```
@@ -208,7 +227,9 @@ Tracks when chat members change status.
 ```python
 from telegram.ext import ChatMemberHandler
 
-application.add_handler(ChatMemberHandler(chat_member_update, ChatMemberHandler.CHAT_MEMBER))
+application.add_handler(
+    ChatMemberHandler(chat_member_update, ChatMemberHandler.CHAT_MEMBER)
+)
 ```
 
 ### `ChatJoinRequestHandler`
@@ -218,9 +239,11 @@ Fires when a user sends a join request to a group/channel with approvals enabled
 ```python
 from telegram.ext import ChatJoinRequestHandler
 
+
 async def join_request(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     request = update.chat_join_request
     await request.approve()  # or await request.decline()
+
 
 application.add_handler(ChatJoinRequestHandler(join_request))
 ```
@@ -232,9 +255,16 @@ Tracks when users add, remove, or change reactions.
 ```python
 from telegram.ext import MessageReactionHandler
 
+
 async def reaction_update(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     reaction = update.message_reaction
-    logger.info("Reaction in chat %s: old=%s new=%s", reaction.chat.id, reaction.old_reaction, reaction.new_reaction)
+    logger.info(
+        "Reaction in chat %s: old=%s new=%s",
+        reaction.chat.id,
+        reaction.old_reaction,
+        reaction.new_reaction,
+    )
+
 
 application.add_handler(MessageReactionHandler(reaction_update))
 ```
@@ -245,6 +275,7 @@ Catches all unhandled exceptions from any handler callback.
 
 ```python
 from telegram.error import Forbidden, BadRequest, TimedOut, NetworkError
+
 
 async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> None:
     exception = context.error
@@ -258,6 +289,7 @@ async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> N
         logger.error("Network error: %s", exception)
     else:
         logger.exception("Unexpected error: %s", exception)
+
 
 application.add_error_handler(error_handler)
 ```
@@ -273,6 +305,7 @@ application.add_error_handler(error_handler)
 
 ```python
 from telegram.ext import ApplicationHandlerStop
+
 
 async def privileged_handler(update, context):
     if is_spam(update):
@@ -402,6 +435,7 @@ filters.TEXT & (filters.ChatType.PRIVATE | filters.ChatType.SUPERGROUP)
 ```python
 from telegram.ext import filters
 
+
 class AdminFilter(filters.BaseFilter):
     def __init__(self, admin_ids: list[int]) -> None:
         super().__init__()
@@ -411,6 +445,7 @@ class AdminFilter(filters.BaseFilter):
         if update.effective_user is None:
             return False
         return update.effective_user.id in self.admin_ids
+
 
 application.add_handler(
     MessageHandler(AdminFilter(ADMIN_IDS) & filters.COMMAND, handle_admin_command)
@@ -457,7 +492,10 @@ application.add_handler(
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 keyboard = [
-    [InlineKeyboardButton("Option A", callback_data="opt_a"), InlineKeyboardButton("Option B", callback_data="opt_b")],
+    [
+        InlineKeyboardButton("Option A", callback_data="opt_a"),
+        InlineKeyboardButton("Option B", callback_data="opt_b"),
+    ],
     [InlineKeyboardButton("Visit Docs", url="https://example.com")],
 ]
 markup = InlineKeyboardMarkup(keyboard)
@@ -485,7 +523,9 @@ keyboard = [
 ]
 await update.message.reply_text(
     "Use the keyboard:",
-    reply_markup=ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=False),
+    reply_markup=ReplyKeyboardMarkup(
+        keyboard, resize_keyboard=True, one_time_keyboard=False
+    ),
 )
 ```
 
@@ -507,6 +547,7 @@ Removes the custom reply keyboard and restores the default.
 
 ```python
 from telegram import ReplyKeyboardRemove
+
 await update.message.reply_text("Done.", reply_markup=ReplyKeyboardRemove())
 ```
 
@@ -516,7 +557,10 @@ Forces the user to reply to a specific message. Highlights the message and opens
 
 ```python
 from telegram import ForceReply
-await update.message.reply_text("What is your name?", reply_markup=ForceReply(selective=False))
+
+await update.message.reply_text(
+    "What is your name?", reply_markup=ForceReply(selective=False)
+)
 ```
 
 ---
@@ -547,11 +591,13 @@ Implements a finite state machine for multi-step dialogs.
 # Using range() for numbered states
 NAME, EMAIL, CONFIRM = range(3)
 
+
 # Using Enum for named states
 class RegistrationState(enum.Enum):
     NAME = "name"
     EMAIL = "email"
     CONFIRM = "confirm"
+
 
 # String-based states
 states = {
@@ -567,20 +613,24 @@ from telegram.ext import ConversationHandler, CommandHandler, MessageHandler, fi
 
 NAME, AGE = range(2)
 
+
 async def start_conversation(update, context):
     await update.message.reply_text("What is your name?")
     return NAME
+
 
 async def receive_name(update, context):
     context.user_data["name"] = update.message.text
     await update.message.reply_text("How old are you?")
     return AGE
 
+
 async def receive_age(update, context):
     name = context.user_data["name"]
     age = update.message.text
     await update.message.reply_text(f"{name}, you are {age} years old.")
     return ConversationHandler.END
+
 
 conv_handler = ConversationHandler(
     entry_points=[CommandHandler("register", start_conversation)],
@@ -665,7 +715,7 @@ context.job_queue.run_once(
 context.job_queue.run_repeating(
     callback=cleanup_old_messages,
     interval=1800,  # 30 minutes
-    first=60,       # Start after 1 minute
+    first=60,  # Start after 1 minute
     name="message_cleanup",
 )
 ```
@@ -990,7 +1040,9 @@ offset = int(update.inline_query.offset) if update.inline_query.offset else 0
 page_size = 10
 results = fetch_results(offset, page_size)
 next_offset = str(offset + page_size) if len(results) == page_size else ""
-await update.inline_query.answer(results=results, next_offset=next_offset, cache_time=30, is_personal=True)
+await update.inline_query.answer(
+    results=results, next_offset=next_offset, cache_time=30, is_personal=True
+)
 ```
 
 ---
@@ -1070,10 +1122,11 @@ https://t.me/botname?start=PARAMETER
 
 ```python
 from telegram import LabeledPrice
+
 prices = [
-    LabeledPrice(label="Subtotal", amount=999),   # $9.99
-    LabeledPrice(label="Tax", amount=80),          # $0.80
-    LabeledPrice(label="Discount", amount=-200),   # -$2.00
+    LabeledPrice(label="Subtotal", amount=999),  # $9.99
+    LabeledPrice(label="Tax", amount=80),  # $0.80
+    LabeledPrice(label="Discount", amount=-200),  # -$2.00
 ]
 ```
 
@@ -1101,7 +1154,13 @@ prices = [
 ```python
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
-keyboard = [[InlineKeyboardButton("Open Mini App", web_app=WebAppInfo(url="https://yourdomain.com/app"))]]
+keyboard = [
+    [
+        InlineKeyboardButton(
+            "Open Mini App", web_app=WebAppInfo(url="https://yourdomain.com/app")
+        )
+    ]
+]
 await update.message.reply_text("Launch:", reply_markup=InlineKeyboardMarkup(keyboard))
 ```
 
@@ -1109,7 +1168,13 @@ await update.message.reply_text("Launch:", reply_markup=InlineKeyboardMarkup(key
 
 ```python
 from telegram import MenuButtonWebApp
-await bot.set_chat_menu_button(chat_id=chat_id, menu_button=MenuButtonWebApp(text="Open App", web_app=WebAppInfo(url="https://yourdomain.com/app")))
+
+await bot.set_chat_menu_button(
+    chat_id=chat_id,
+    menu_button=MenuButtonWebApp(
+        text="Open App", web_app=WebAppInfo(url="https://yourdomain.com/app")
+    ),
+)
 ```
 
 ### initData Validation (CRITICAL)
@@ -1118,21 +1183,28 @@ await bot.set_chat_menu_button(chat_id=chat_id, menu_button=MenuButtonWebApp(tex
 import hashlib, hmac, json, time
 from urllib.parse import parse_qs
 
+
 def validate_webapp_initdata(init_data: str, bot_token: str) -> dict:
     parsed = parse_qs(init_data)
     if "hash" not in parsed:
         raise ValueError("Missing hash in initData")
     received_hash = parsed.pop("hash")[0]
-    data_check_pairs = [f"{key}={value}" for key, values in sorted(parsed.items()) for value in values]
+    data_check_pairs = [
+        f"{key}={value}" for key, values in sorted(parsed.items()) for value in values
+    ]
     data_check_string = "\n".join(data_check_pairs)
     secret_key = hmac.new(b"WebAppData", bot_token.encode(), hashlib.sha256).digest()
-    expected_hash = hmac.new(secret_key, data_check_string.encode(), hashlib.sha256).hexdigest()
+    expected_hash = hmac.new(
+        secret_key, data_check_string.encode(), hashlib.sha256
+    ).hexdigest()
     if not hmac.compare_digest(received_hash, expected_hash):
         raise ValueError("Invalid initData hash")
     auth_date = int(parsed.get("auth_date", [0])[0])
     if time.time() - auth_date > 86400:
         raise ValueError("initData expired")
-    return {key: values[0] if len(values) == 1 else values for key, values in parsed.items()}
+    return {
+        key: values[0] if len(values) == 1 else values for key, values in parsed.items()
+    }
 ```
 
 ### Mini App Security Checklist
@@ -1241,7 +1313,9 @@ permissions = ChatPermissions(
     can_pin_messages=True,
     can_manage_topics=True,
 )
-await bot.restrict_chat_member(chat_id=chat_id, user_id=user_id, permissions=permissions)
+await bot.restrict_chat_member(
+    chat_id=chat_id, user_id=user_id, permissions=permissions
+)
 ```
 
 ### ChatAdministratorRights
@@ -1369,27 +1443,55 @@ Available in python-telegram-bot v20+ and Telegram Bot API 8.0+.
 ### `sendRichMessage`
 
 ```python
-from telegram.rich import RichMessage, Heading, Paragraph, List, ListItem, CodeBlock, Table, TableRow, TableCell, Bold, Italic
+from telegram.rich import (
+    RichMessage,
+    Heading,
+    Paragraph,
+    List,
+    ListItem,
+    CodeBlock,
+    Table,
+    TableRow,
+    TableCell,
+    Bold,
+    Italic,
+)
 
-rich = RichMessage(blocks=[
-    Heading(level=2, text="Status"),
-    Paragraph(blocks=[Bold(text="Operational")]),
-    Table(rows=[
-        TableRow(cells=[TableCell(text="Service", bold=True), TableCell(text="Status", bold=True)]),
-        TableRow(cells=[TableCell(text="API"), TableCell(text="Up")]),
-    ]),
-])
+rich = RichMessage(
+    blocks=[
+        Heading(level=2, text="Status"),
+        Paragraph(blocks=[Bold(text="Operational")]),
+        Table(
+            rows=[
+                TableRow(
+                    cells=[
+                        TableCell(text="Service", bold=True),
+                        TableCell(text="Status", bold=True),
+                    ]
+                ),
+                TableRow(cells=[TableCell(text="API"), TableCell(text="Up")]),
+            ]
+        ),
+    ]
+)
 await update.message.reply_rich_message(rich)
 ```
 
 ### Streaming AI Responses
 
 ```python
-draft = await update.message.reply_rich_message_draft(blocks=[Paragraph(text="Thinking...")])
+draft = await update.message.reply_rich_message_draft(
+    blocks=[Paragraph(text="Thinking...")]
+)
 collected = ""
 async for chunk in stream_ai_response(query):
     collected += chunk
-    await draft.edit(blocks=[Paragraph(text=collected), Paragraph(text="_Generating..._", italic=True)])
+    await draft.edit(
+        blocks=[
+            Paragraph(text=collected),
+            Paragraph(text="_Generating..._", italic=True),
+        ]
+    )
 await draft.edit(blocks=[Paragraph(text=collected)])
 ```
 
@@ -1440,6 +1542,7 @@ app = (
 
 ```python
 import asyncio, time
+
 
 class TokenBucketRateLimiter:
     def __init__(self, max_tokens: int, refill_rate: float) -> None:
@@ -1553,8 +1656,10 @@ if secret_token != expected_secret:
 ```python
 import html
 
+
 def escape_html(text: str) -> str:
     return html.escape(text, quote=False)
+
 
 await update.message.reply_text(
     f"User said: {escape_html(user_input)}",
@@ -1567,6 +1672,7 @@ await update.message.reply_text(
 ```python
 def validate_callback_data(data: str) -> bool:
     import re
+
     pattern = r"^(order|item|settings):(confirm|cancel|edit|toggle):\d+$"
     return bool(re.match(pattern, data))
 ```
@@ -1659,6 +1765,7 @@ from unittest.mock import AsyncMock, Mock
 from telegram import Chat, Update, User
 from telegram.ext import ContextTypes
 
+
 @pytest.fixture
 def update() -> Mock:
     user = User(id=456, first_name="Alice", is_bot=False)
@@ -1673,6 +1780,7 @@ def update() -> Mock:
     upd.effective_chat = chat
     return upd
 
+
 @pytest.fixture
 def context() -> Mock:
     ctx = Mock(spec=ContextTypes.DEFAULT_TYPE)
@@ -1682,6 +1790,7 @@ def context() -> Mock:
     ctx.chat_data: dict = {}
     ctx.bot_data: dict = {}
     return ctx
+
 
 @pytest.mark.asyncio
 async def test_echo_handler(update: Mock, context: Mock) -> None:

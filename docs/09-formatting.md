@@ -81,6 +81,7 @@ import re
 # Characters that MUST be escaped in MarkdownV2 outside code blocks
 SPECIAL_CHARS = r"_*[]()~`>#+-=|{}.!"
 
+
 def escape_markdown_v2(text: str) -> str:
     """Escape all special characters for MarkdownV2 formatting."""
     return re.sub(r"([_*\[\]()~`>#+\-=|{}.!\\])", r"\\\1", text)
@@ -192,9 +193,7 @@ def escape_html(text: str) -> str:
     return html_lib.escape(text, quote=False)
 
 
-async def send_safe_html(
-    update: Update, context: ContextTypes.DEFAULT_TYPE
-) -> None:
+async def send_safe_html(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send a message with user input safely escaped in HTML mode."""
     if not update.message or not update.message.text:
         return
@@ -291,7 +290,7 @@ import time
 timestamp = int(time.time())
 
 await update.message.reply_text(
-    f"Current time: <tg-datetime iso=\"{timestamp}\">{timestamp}</tg-datetime>",
+    f'Current time: <tg-datetime iso="{timestamp}">{timestamp}</tg-datetime>',
     parse_mode="HTML",
 )
 ```
@@ -323,9 +322,7 @@ from telegram import Update
 from telegram.ext import ContextTypes
 
 
-async def send_custom_emoji(
-    update: Update, context: ContextTypes.DEFAULT_TYPE
-) -> None:
+async def send_custom_emoji(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send a message containing a custom emoji."""
     if not update.message:
         return
@@ -388,6 +385,7 @@ Never inject raw user text into a formatted string. Always escape it first:
 
 ```python
 from telegram.constants import ParseMode
+
 
 def build_response(user_input: str, parse_mode: str = ParseMode.HTML) -> str:
     """Build a formatted response with safely escaped user input."""
@@ -558,8 +556,11 @@ class FormattedMessage:
 
     def text(self, content: str) -> "FormattedMessage":
         """Append raw text (escaped automatically)."""
-        self._parts.append(escape_html(content) if self.parse_mode == "HTML"
-                           else escape_markdown_v2(content))
+        self._parts.append(
+            escape_html(content)
+            if self.parse_mode == "HTML"
+            else escape_markdown_v2(content)
+        )
         return self
 
     def bold_text(self, content: str) -> "FormattedMessage":
@@ -571,10 +572,14 @@ class FormattedMessage:
         """Append a code block."""
         if self.parse_mode == "HTML":
             lang_attr = f' class="language-{language}"' if language else ""
-            self._parts.append(f"<pre><code{lang_attr}>{escape_html(content)}</code></pre>")
+            self._parts.append(
+                f"<pre><code{lang_attr}>{escape_html(content)}</code></pre>"
+            )
         else:
             fence = "```"
-            self._parts.append(f"{fence}{language}\n{escape_markdown_v2_code(content)}\n{fence}")
+            self._parts.append(
+                f"{fence}{language}\n{escape_markdown_v2_code(content)}\n{fence}"
+            )
         return self
 
     def inline_code(self, content: str) -> "FormattedMessage":

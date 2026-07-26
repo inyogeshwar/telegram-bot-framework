@@ -21,8 +21,10 @@ Always use async/await, PEP 484 type hints, and ApplicationBuilder pattern.
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
+
 async def handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text("Response")
+
 
 application = ApplicationBuilder().token(token).build()
 application.add_handler(CommandHandler("start", handler))

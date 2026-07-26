@@ -97,6 +97,7 @@ Telegram defines four distinct chat types. Each presents different capabilities 
 ```python
 from telegram import Update
 
+
 async def detect_chat_type(update: Update) -> str:
     """Return the chat type string for the current update."""
     chat = update.effective_chat
@@ -163,7 +164,9 @@ from telegram.ext import ContextTypes, MessageHandler, filters
 logger = logging.getLogger(__name__)
 
 
-async def welcome_new_members(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def welcome_new_members(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> None:
     """Send a welcome message when new members join the chat."""
     chat = update.effective_chat
 
@@ -177,7 +180,9 @@ async def welcome_new_members(update: Update, context: ContextTypes.DEFAULT_TYPE
             f"There are now {chat.get_member_count()} members."
         )
         await chat.send_message(welcome_text)
-        logger.info("Welcomed new member %s (id=%d) to chat %d", name, member.id, chat.id)
+        logger.info(
+            "Welcomed new member %s (id=%d) to chat %d", name, member.id, chat.id
+        )
 
 
 welcome_handler = MessageHandler(
@@ -196,7 +201,9 @@ from telegram.ext import ContextTypes, MessageHandler, filters
 logger = logging.getLogger(__name__)
 
 
-async def handle_left_member(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def handle_left_member(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> None:
     """Log and acknowledge when a member leaves."""
     left_member = update.message.left_chat_member
     chat = update.effective_chat
@@ -223,7 +230,9 @@ from telegram.ext import ContextTypes, MessageHandler, filters
 logger = logging.getLogger(__name__)
 
 
-async def handle_pinned_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def handle_pinned_message(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> None:
     """React to a pinned message in the group."""
     pinned = update.message.pinned_message
     chat = update.effective_chat
@@ -280,9 +289,7 @@ from telegram.ext import ContextTypes
 ADMIN_STATUSES = frozenset({"creator", "administrator"})
 
 
-async def is_chat_admin(
-    bot, chat_id: int, user_id: int
-) -> bool:
+async def is_chat_admin(bot, chat_id: int, user_id: int) -> bool:
     """Check whether a user is an admin or creator in the given chat."""
     try:
         member = await bot.get_chat_member(chat_id, user_id)
@@ -414,7 +421,9 @@ from telegram import Update
 from telegram.ext import ContextTypes
 
 
-async def check_admin_rights(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def check_admin_rights(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> None:
     """Verify the bot has the required admin rights before performing an action."""
     chat = update.effective_chat
     bot = context.bot
@@ -650,7 +659,9 @@ from telegram import Update
 from telegram.ext import ContextTypes, MessageHandler, filters
 
 
-async def handle_channel_post(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def handle_channel_post(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> None:
     """Process new channel posts."""
     post = update.channel_post
 
@@ -916,11 +927,13 @@ async def is_chat_admin(bot, chat_id: int, user_id: int) -> bool:
         return False
 
 
-async def welcome_new_members(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def welcome_new_members(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> None:
     """Greet new members and set default permissions."""
     chat = update.effective_chat
 
-    for member in (update.message.new_chat_members or []):
+    for member in update.message.new_chat_members or []:
         if member.is_bot:
             continue
 
@@ -932,11 +945,18 @@ async def welcome_new_members(update: Update, context: ContextTypes.DEFAULT_TYPE
         logger.info("Welcomed %s (id=%d) to chat %d", name, member.id, chat.id)
 
 
-async def handle_left_member(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def handle_left_member(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> None:
     """Log when a member leaves."""
     left = update.message.left_chat_member
     if left and not left.is_bot:
-        logger.info("Member %s (id=%d) left chat %d", left.full_name, left.id, update.effective_chat.id)
+        logger.info(
+            "Member %s (id=%d) left chat %d",
+            left.full_name,
+            left.id,
+            update.effective_chat.id,
+        )
 
 
 async def ban_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -953,7 +973,11 @@ async def ban_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         return
 
     target = update.message.reply_to_message.from_user
-    reason = update.message.text.split(maxsplit=1)[-1] if len(update.message.text.split()) > 1 else "No reason"
+    reason = (
+        update.message.text.split(maxsplit=1)[-1]
+        if len(update.message.text.split()) > 1
+        else "No reason"
+    )
 
     await context.bot.ban_chat_member(chat.id, target.id)
     await update.message.reply_text(f"Banned {target.full_name}. Reason: {reason}")
@@ -995,7 +1019,9 @@ async def mute_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     )
 
     await update.message.reply_text(f"Muted {target.full_name} for 1 hour.")
-    logger.info("User %s muted %s in chat %d", user.full_name, target.full_name, chat.id)
+    logger.info(
+        "User %s muted %s in chat %d", user.full_name, target.full_name, chat.id
+    )
 
 
 async def warn_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -1020,13 +1046,24 @@ async def warn_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         await update.message.reply_text(
             f"{target.full_name} reached {MAX_WARNINGS} warnings and has been banned."
         )
-        logger.info("User %s auto-banned after %d warnings in chat %d", target.full_name, count, chat.id)
+        logger.info(
+            "User %s auto-banned after %d warnings in chat %d",
+            target.full_name,
+            count,
+            chat.id,
+        )
         del _warn_counts[target.id]
     else:
         await update.message.reply_text(
             f"⚠️ {target.full_name} warned ({count}/{MAX_WARNINGS})."
         )
-        logger.info("User %s warned (%d/%d) in chat %d", target.full_name, count, MAX_WARNINGS, chat.id)
+        logger.info(
+            "User %s warned (%d/%d) in chat %d",
+            target.full_name,
+            count,
+            MAX_WARNINGS,
+            chat.id,
+        )
 
 
 async def spam_detector(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -1082,8 +1119,12 @@ def main() -> None:
     """Start the group moderation bot."""
     application = Application.builder().token(BOT_TOKEN).build()
 
-    application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, welcome_new_members))
-    application.add_handler(MessageHandler(filters.StatusUpdate.LEFT_CHAT_MEMBER, handle_left_member))
+    application.add_handler(
+        MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, welcome_new_members)
+    )
+    application.add_handler(
+        MessageHandler(filters.StatusUpdate.LEFT_CHAT_MEMBER, handle_left_member)
+    )
     application.add_handler(CommandHandler("ban", ban_command))
     application.add_handler(CommandHandler("mute", mute_command))
     application.add_handler(CommandHandler("warn", warn_command))

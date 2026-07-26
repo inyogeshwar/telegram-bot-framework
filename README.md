@@ -64,13 +64,16 @@ from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
 logging.basicConfig(level=logging.INFO)
 
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text("Hello! I'm your bot.")
+
 
 def main() -> None:
     app = ApplicationBuilder().token("YOUR_TOKEN").build()
     app.add_handler(CommandHandler("start", start))
     app.run_polling(drop_pending_updates=True)
+
 
 if __name__ == "__main__":
     main()

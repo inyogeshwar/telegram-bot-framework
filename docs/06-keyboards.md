@@ -80,6 +80,7 @@ markup = InlineKeyboardMarkup(keyboard)
 from telegram import Update
 from telegram.ext import ContextTypes
 
+
 async def send_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     keyboard = [
         [
@@ -111,6 +112,7 @@ When a user taps an inline button, the bot receives a `CallbackQuery` object. **
 from telegram import Update
 from telegram.ext import CallbackQueryHandler, ContextTypes
 
+
 async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.callback_query
     await query.answer()  # Acknowledge the callback (REQUIRED)
@@ -127,6 +129,7 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 import re
 from telegram.ext import CallbackQueryHandler
 
+
 async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.callback_query
     match = re.match(r"page_(\d+)", query.data)
@@ -136,6 +139,7 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         await query.edit_message_text(f"Showing page {page}")
     else:
         await query.answer("Unknown action.", show_alert=True)
+
 
 # Register with a pattern
 app.add_handler(CallbackQueryHandler(handle_callback, pattern=r"^page_\d+$"))
@@ -186,7 +190,9 @@ def build_page_keyboard(page: int) -> InlineKeyboardMarkup:
     nav_row: list[InlineKeyboardButton] = []
     if page > 0:
         nav_row.append(InlineKeyboardButton("⬅ Prev", callback_data=f"page_{page - 1}"))
-    nav_row.append(InlineKeyboardButton(f"{page + 1}/{total_pages}", callback_data="noop"))
+    nav_row.append(
+        InlineKeyboardButton(f"{page + 1}/{total_pages}", callback_data="noop")
+    )
     if page < total_pages - 1:
         nav_row.append(InlineKeyboardButton("Next ➡", callback_data=f"page_{page + 1}"))
     keyboard.append(nav_row)
@@ -220,6 +226,7 @@ async def select_item(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
 ```python
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import ContextTypes
+
 
 def settings_keyboard(settings: dict[str, bool]) -> InlineKeyboardMarkup:
     keyboard = [
@@ -270,6 +277,7 @@ async def settings_done(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import ContextTypes
 
+
 async def confirm_action(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     keyboard = [
         [
@@ -283,7 +291,9 @@ async def confirm_action(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     )
 
 
-async def handle_confirmation(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def handle_confirmation(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> None:
     query = update.callback_query
     await query.answer()
 
@@ -300,10 +310,15 @@ async def handle_confirmation(update: Update, context: ContextTypes.DEFAULT_TYPE
 from telegram import CopyTextButton, InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import ContextTypes
 
+
 async def share_code(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     code = "pip install python-telegram-bot"
     keyboard = [
-        [InlineKeyboardButton("📋 Copy Install Command", copy_text=CopyTextButton(text=code))]
+        [
+            InlineKeyboardButton(
+                "📋 Copy Install Command", copy_text=CopyTextButton(text=code)
+            )
+        ]
     ]
     await update.message.reply_text(
         f"Install command:\n\n`{code}`",
@@ -323,6 +338,7 @@ Reply keyboards modify the user's native keyboard area. Unlike inline keyboards,
 ```python
 from telegram import ReplyKeyboardMarkup, KeyboardButton, Update
 from telegram.ext import ContextTypes
+
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     keyboard = [
@@ -408,6 +424,7 @@ Removes the custom reply keyboard and restores the default one.
 from telegram import ReplyKeyboardRemove, Update
 from telegram.ext import ContextTypes
 
+
 async def done(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text(
         "Conversation finished.",
@@ -426,6 +443,7 @@ Forces the user to reply to a specific message. The user's client highlights the
 ```python
 from telegram import ForceReply, Update
 from telegram.ext import ContextTypes
+
 
 async def ask_question(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text(
@@ -476,24 +494,26 @@ SETTINGS_MENU = "settings"
 
 
 def main_menu_keyboard() -> InlineKeyboardMarkup:
-    return InlineKeyboardMarkup([
-        [InlineKeyboardButton("Settings ⚙️", callback_data="menu_settings")],
-        [InlineKeyboardButton("Profile 👤", callback_data="menu_profile")],
-    ])
+    return InlineKeyboardMarkup(
+        [
+            [InlineKeyboardButton("Settings ⚙️", callback_data="menu_settings")],
+            [InlineKeyboardButton("Profile 👤", callback_data="menu_profile")],
+        ]
+    )
 
 
 def settings_keyboard() -> InlineKeyboardMarkup:
-    return InlineKeyboardMarkup([
-        [InlineKeyboardButton("Language", callback_data="set_language")],
-        [InlineKeyboardButton("Notifications", callback_data="set_notifications")],
-        [InlineKeyboardButton("← Back", callback_data="menu_main")],
-    ])
+    return InlineKeyboardMarkup(
+        [
+            [InlineKeyboardButton("Language", callback_data="set_language")],
+            [InlineKeyboardButton("Notifications", callback_data="set_notifications")],
+            [InlineKeyboardButton("← Back", callback_data="menu_main")],
+        ]
+    )
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update.message.reply_text(
-        "Main Menu:", reply_markup=main_menu_keyboard()
-    )
+    await update.message.reply_text("Main Menu:", reply_markup=main_menu_keyboard())
 
 
 async def navigate(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -506,7 +526,9 @@ async def navigate(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     elif route == "menu_settings":
         await query.edit_message_text("Settings:", reply_markup=settings_keyboard())
     elif route == "menu_profile":
-        await query.edit_message_text("Your Profile:", reply_markup=main_menu_keyboard())
+        await query.edit_message_text(
+            "Your Profile:", reply_markup=main_menu_keyboard()
+        )
 ```
 
 ### Confirmation Pattern
@@ -527,10 +549,13 @@ flowchart LR
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import ContextTypes
 
+
 async def delete_account(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     keyboard = [
         [
-            InlineKeyboardButton("Yes, delete my account", callback_data="delete_confirm"),
+            InlineKeyboardButton(
+                "Yes, delete my account", callback_data="delete_confirm"
+            ),
             InlineKeyboardButton("Cancel", callback_data="delete_cancel"),
         ]
     ]
@@ -575,16 +600,19 @@ SIZES = ["S", "M", "L", "XL"]
 
 
 def product_keyboard() -> InlineKeyboardMarkup:
-    return InlineKeyboardMarkup([
-        [InlineKeyboardButton(name, callback_data=f"product_{pid}")]
-        for pid, name in PRODUCTS.items()
-    ])
+    return InlineKeyboardMarkup(
+        [
+            [InlineKeyboardButton(name, callback_data=f"product_{pid}")]
+            for pid, name in PRODUCTS.items()
+        ]
+    )
 
 
 def size_keyboard() -> InlineKeyboardMarkup:
-    return InlineKeyboardMarkup([
-        [InlineKeyboardButton(size, callback_data=f"size_{size}")] for size in SIZES
-    ] + [[InlineKeyboardButton("← Back", callback_data="back_to_products")]])
+    return InlineKeyboardMarkup(
+        [[InlineKeyboardButton(size, callback_data=f"size_{size}")] for size in SIZES]
+        + [[InlineKeyboardButton("← Back", callback_data="back_to_products")]]
+    )
 
 
 async def start_order(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -603,7 +631,9 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 
     if data == "back_to_products":
         context.user_data["order_state"] = OrderState.SELECT_PRODUCT
-        await query.edit_message_text("Select a product:", reply_markup=product_keyboard())
+        await query.edit_message_text(
+            "Select a product:", reply_markup=product_keyboard()
+        )
         return
 
     if state == OrderState.SELECT_PRODUCT and data.startswith("product_"):
@@ -620,12 +650,14 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         context.user_data["size"] = size
         context.user_data["order_state"] = OrderState.CONFIRM
         product = PRODUCTS[context.user_data["product"]]
-        keyboard = InlineKeyboardMarkup([
+        keyboard = InlineKeyboardMarkup(
             [
-                InlineKeyboardButton("✅ Confirm", callback_data="order_confirm"),
-                InlineKeyboardButton("❌ Cancel", callback_data="order_cancel"),
+                [
+                    InlineKeyboardButton("✅ Confirm", callback_data="order_confirm"),
+                    InlineKeyboardButton("❌ Cancel", callback_data="order_cancel"),
+                ]
             ]
-        ])
+        )
         await query.edit_message_text(
             f"Order: {product} — Size {size}\nConfirm?",
             reply_markup=keyboard,

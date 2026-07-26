@@ -1,0 +1,28 @@
+# OpenCode .ignore file
+# This file controls which files ripgrep can search
+
+# Include documentation (even if in .gitignore)
+!docs/
+!examples/
+
+# Include configuration files
+!.opencode/
+!.claude/
+!.cursor/
+!.gemini/
+!.github/
+
+# Exclude sensitive files
+.env
+.env.local
+.env.production
+
+# Exclude large files
+*.log
+*.tmp
+*.cache
+
+# Exclude build artifacts
+dist/
+build/
+*.egg-info/

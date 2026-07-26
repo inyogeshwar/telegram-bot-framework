@@ -37,8 +37,11 @@ import os
 import sys
 from telegram import Update
 from telegram.ext import (
-    ApplicationBuilder, CommandHandler,
-    ContextTypes, MessageHandler, filters,
+    ApplicationBuilder,
+    CommandHandler,
+    ContextTypes,
+    MessageHandler,
+    filters,
 )
 
 logging.basicConfig(
@@ -47,8 +50,10 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text("Hello!")
+
 
 def main() -> None:
     token = os.getenv("BOT_TOKEN")
@@ -58,6 +63,7 @@ def main() -> None:
     application = ApplicationBuilder().token(token).build()
     application.add_handler(CommandHandler("start", start))
     application.run_polling(drop_pending_updates=True)
+
 
 if __name__ == "__main__":
     main()

@@ -348,20 +348,16 @@ logger = logging.getLogger(__name__)
 
 def main() -> None:
     """Configure and start the bot with optimized polling."""
-    app = (
-        ApplicationBuilder()
-        .token("YOUR_TOKEN_HERE")
-        .build()
-    )
+    app = ApplicationBuilder().token("YOUR_TOKEN_HERE").build()
 
     # ... register handlers ...
 
     app.run_polling(
-        drop_pending_updates=True,     # Ignore updates from downtime
-        poll_interval=2.0,             # Seconds between polls
-        read_timeout=10,               # Network read timeout
-        connect_timeout=10,            # Connection timeout
-        allowed_updates=[              # Only receive what you handle
+        drop_pending_updates=True,  # Ignore updates from downtime
+        poll_interval=2.0,  # Seconds between polls
+        read_timeout=10,  # Network read timeout
+        connect_timeout=10,  # Connection timeout
+        allowed_updates=[  # Only receive what you handle
             "message",
             "callback_query",
             "inline_query",

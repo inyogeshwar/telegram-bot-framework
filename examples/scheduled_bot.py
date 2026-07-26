@@ -136,11 +136,7 @@ def main() -> None:
         logger.error("BOT_TOKEN environment variable not set.")
         sys.exit(1)
 
-    application = (
-        ApplicationBuilder()
-        .token(token)
-        .build()
-    )
+    application = ApplicationBuilder().token(token).build()
 
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("remind", remind))

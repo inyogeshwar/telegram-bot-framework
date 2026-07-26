@@ -94,9 +94,9 @@ Each element in the `prices` list is a `LabeledPrice` object representing a line
 from telegram import LabeledPrice
 
 prices = [
-    LabeledPrice(label="Subtotal", amount=999),   # $9.99
-    LabeledPrice(label="Tax", amount=80),          # $0.80
-    LabeledPrice(label="Discount", amount=-200),   # -$2.00
+    LabeledPrice(label="Subtotal", amount=999),  # $9.99
+    LabeledPrice(label="Tax", amount=80),  # $0.80
+    LabeledPrice(label="Discount", amount=-200),  # -$2.00
 ]
 # Total: $8.79
 ```
@@ -158,7 +158,9 @@ from telegram import Update, PreCheckoutQuery
 from telegram.ext import ContextTypes
 
 
-async def precheckout_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def precheckout_handler(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> None:
     """Handle PreCheckoutQuery — must respond within 10 seconds."""
     query: PreCheckoutQuery = update.pre_checkout_query
 
@@ -192,10 +194,7 @@ async def precheckout_handler(update: Update, context: ContextTypes.DEFAULT_TYPE
 When rejecting a payment, provide a user-facing `error_message` (1-256 characters):
 
 ```python
-await query.answer(
-    ok=False,
-    error_message="Sorry, this item is no longer available."
-)
+await query.answer(ok=False, error_message="Sorry, this item is no longer available.")
 ```
 
 ---
@@ -282,7 +281,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-async def subscription_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def subscription_handler(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> None:
     """Handle subscription state changes."""
     subscription: BotSubscriptionUpdated = update.bot_subscription_updated
 
@@ -391,7 +392,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-async def paid_media_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def paid_media_handler(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> None:
     """Handle PaidMediaPurchased update."""
     purchased: PaidMediaPurchased = update.paid_media_purchased
 
@@ -465,11 +468,11 @@ PRODUCTS = {
 
 # ─── Command Handlers ───────────────────────────────────────────
 
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Display available products."""
     keyboard = [
-        [{"text": f"Buy {p['title']} — ${p['price'] / 100:.2f}",
-          "pay": True}]
+        [{"text": f"Buy {p['title']} — ${p['price'] / 100:.2f}", "pay": True}]
         for p in PRODUCTS.values()
     ]
     await update.message.reply_text(
@@ -479,6 +482,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 
 # ─── Invoice Creation ───────────────────────────────────────────
+
 
 async def handle_checkout(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle pre-checkout query from Stripe."""
@@ -504,6 +508,7 @@ async def handle_checkout(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 
 # ─── Shipping (Flexible Pricing) ───────────────────────────────
 
+
 async def shipping_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle shipping queries for flexible-price invoices."""
     query: ShippingQuery = update.shipping_query
@@ -526,7 +531,10 @@ async def shipping_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -
 
 # ─── Successful Payment ────────────────────────────────────────
 
-async def successful_payment(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+
+async def successful_payment(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> None:
     """Handle successful payment confirmation."""
     payment = update.message.successful_payment
 
@@ -547,15 +555,14 @@ async def successful_payment(update: Update, context: ContextTypes.DEFAULT_TYPE)
 
 # ─── Application Setup ─────────────────────────────────────────
 
+
 def main() -> None:
     app = Application.builder().token(BOT_TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
     app.add_handler(PreCheckoutQueryHandler(handle_checkout))
     app.add_handler(ShippingQueryHandler(shipping_handler))
-    app.add_handler(
-        MessageHandler(filters.SUCCESSFUL_PAYMENT, successful_payment)
-    )
+    app.add_handler(MessageHandler(filters.SUCCESSFUL_PAYMENT, successful_payment))
 
     logger.info("Bot started polling.")
     app.run_polling(allowed_updates=Update.ALL_TYPES)
