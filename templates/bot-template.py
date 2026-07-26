@@ -30,11 +30,15 @@ logger = logging.getLogger(__name__)
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle /start command."""
+    if not update.message:
+        return
     await update.message.reply_text("Hello!")
 
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle /help command."""
+    if not update.message:
+        return
     await update.message.reply_text("Help text here")
 
 

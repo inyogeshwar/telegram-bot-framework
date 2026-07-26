@@ -47,6 +47,8 @@ markup = ReplyKeyboardMarkup(
 
 async def start_registration(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Start the registration conversation."""
+    if not update.message:
+        return ConversationHandler.END
     await update.message.reply_text(
         "Let's get you registered!\n\nWhat's your name?",
         reply_markup=ReplyKeyboardRemove(),
@@ -56,6 +58,10 @@ async def start_registration(update: Update, context: ContextTypes.DEFAULT_TYPE)
 
 async def name(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Store name and ask for age."""
+    if not update.message or not update.message.text:
+        return ConversationHandler.END
+    if context.user_data is None:
+        context.user_data = {}
     context.user_data["name"] = update.message.text
     await update.message.reply_text(
         f"Nice to meet you, {update.message.text}!\n\nHow old are you?"
@@ -65,6 +71,10 @@ async def name(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
 async def age(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Store age and ask for location."""
+    if not update.message or not update.message.text:
+        return ConversationHandler.END
+    if context.user_data is None:
+        context.user_data = {}
     text = update.message.text
     if not text.isdigit() or int(text) < 0 or int(text) > 150:
         await update.message.reply_text("Please enter a valid age (0-150).")
@@ -77,6 +87,10 @@ async def age(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
 async def location(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Store location and complete registration."""
+    if not update.message or not update.message.text:
+        return ConversationHandler.END
+    if context.user_data is None:
+        context.user_data = {}
     context.user_data["location"] = update.message.text
 
     # Summary
@@ -99,6 +113,8 @@ async def location(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Cancel the conversation."""
+    if not update.message:
+        return ConversationHandler.END
     await update.message.reply_text(
         "Registration cancelled.",
         reply_markup=ReplyKeyboardRemove(),
@@ -108,6 +124,8 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
 async def timeout(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Handle conversation timeout."""
+    if not update.message:
+        return ConversationHandler.END
     await update.message.reply_text(
         "Registration timed out. Please start again with /register.",
         reply_markup=ReplyKeyboardRemove(),
@@ -137,7 +155,7 @@ def main() -> None:
             LOCATION: [MessageHandler(filters.TEXT & ~filters.COMMAND, location)],
         },
         fallbacks=[CommandHandler("cancel", cancel)],
-        timeout=300,  # 5 minutes
+        conversation_timeout=300,  # 5 minutes
     )
 
     application.add_handler(conv_handler)

@@ -10,6 +10,7 @@ import sys
 from aiohttp import web
 from telegram import Update
 from telegram.ext import (
+    Application,
     ApplicationBuilder,
     CommandHandler,
     ContextTypes,
@@ -24,6 +25,8 @@ logger = logging.getLogger(__name__)
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle /start command."""
+    if not update.message:
+        return
     await update.message.reply_text("Webhook bot running!")
 
 
@@ -40,7 +43,7 @@ async def webhook_handler(request: web.Request) -> web.Response:
     return web.Response()
 
 
-async def on_startup(application) -> None:
+async def on_startup(application: Application) -> None:  # type: ignore[type-arg]
     """Set up webhook on startup."""
     webhook_url = os.getenv("WEBHOOK_URL")
     if webhook_url:

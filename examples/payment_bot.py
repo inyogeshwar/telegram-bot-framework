@@ -18,6 +18,7 @@ from __future__ import annotations
 import logging
 import os
 import sys
+from typing import TypedDict
 
 from telegram import (
     LabeledPrice,
@@ -32,6 +33,14 @@ from telegram.ext import (
     filters,
 )
 
+
+class ProductDict(TypedDict):
+    title: str
+    description: str
+    price: int
+    payload: str
+
+
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     level=logging.INFO,
@@ -39,7 +48,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Product catalog
-PRODUCTS = {
+PRODUCTS: dict[str, ProductDict] = {
     "premium": {
         "title": "Premium Subscription",
         "description": "1 month of premium features",
@@ -57,6 +66,8 @@ PRODUCTS = {
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle /start command."""
+    if not update.message:
+        return
     await update.message.reply_text(
         "Payment Bot\n\n"
         "Commands:\n"
@@ -107,6 +118,8 @@ async def buy(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 async def pre_checkout(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle pre-checkout query."""
     query = update.pre_checkout_query
+    if not query:
+        return
 
     if query.invoice_payload not in [p["payload"] for p in PRODUCTS.values()]:
         await query.answer(ok=False, error_message="Invalid product.")

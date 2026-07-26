@@ -41,6 +41,8 @@ SAMPLE_RESPONSES = {
 
 async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle inline queries."""
+    if not update.inline_query:
+        return
     query = update.inline_query.query.lower()
 
     if not query:

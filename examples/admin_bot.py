@@ -38,6 +38,8 @@ logger = logging.getLogger(__name__)
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle /start command."""
+    if not update.message:
+        return
     await update.message.reply_text(
         "Admin Bot\n\n"
         "Commands:\n"
@@ -53,7 +55,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 async def ban_user(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Ban a user from the group."""
-    if not update.message or not update.message.reply_to_message:
+    if not update.message:
+        return
+    if not update.message.reply_to_message:
         await update.message.reply_text("Reply to a user's message to ban them.")
         return
 
@@ -74,7 +78,9 @@ async def ban_user(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 async def unban_user(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Unban a user from the group."""
-    if not update.message or not update.message.reply_to_message:
+    if not update.message:
+        return
+    if not update.message.reply_to_message:
         await update.message.reply_text("Reply to a user's message to unban them.")
         return
 
@@ -95,7 +101,9 @@ async def unban_user(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
 async def mute_user(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Mute a user in the group."""
-    if not update.message or not update.message.reply_to_message:
+    if not update.message:
+        return
+    if not update.message.reply_to_message:
         await update.message.reply_text("Reply to a user's message to mute them.")
         return
 
@@ -119,7 +127,9 @@ async def mute_user(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 async def unmute_user(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Unmute a user in the group."""
-    if not update.message or not update.message.reply_to_message:
+    if not update.message:
+        return
+    if not update.message.reply_to_message:
         await update.message.reply_text("Reply to a user's message to unmute them.")
         return
 
@@ -143,7 +153,9 @@ async def unmute_user(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
 
 async def delete_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Delete the replied-to message."""
-    if not update.message or not update.message.reply_to_message:
+    if not update.message:
+        return
+    if not update.message.reply_to_message:
         await update.message.reply_text("Reply to a message to delete it.")
         return
 
@@ -157,7 +169,9 @@ async def delete_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
 async def welcome(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send welcome message to new members."""
-    if not update.message or not update.message.new_chat_members:
+    if not update.message:
+        return
+    if not update.message.new_chat_members:
         return
 
     for user in update.message.new_chat_members:
@@ -172,6 +186,8 @@ async def welcome(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Show help text."""
+    if not update.message:
+        return
     await update.message.reply_text(
         "Admin Bot Commands:\n\n"
         "/ban - Ban a user (reply to their message)\n"

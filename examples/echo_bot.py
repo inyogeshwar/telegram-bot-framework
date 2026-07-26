@@ -34,6 +34,8 @@ logger = logging.getLogger(__name__)
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle /start command — send welcome message."""
+    if not update.message or not update.effective_user:
+        return
     user = update.effective_user
     await update.message.reply_html(
         rf"Hello {user.mention_html()}! "
@@ -43,6 +45,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle /help command — send help text."""
+    if not update.message:
+        return
     await update.message.reply_text(
         "Send me any text message and I'll echo it back.\n\n"
         "Commands:\n"

@@ -60,6 +60,8 @@ rate_limiter = RateLimiter()
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle /start command."""
+    if not update.message or not update.effective_user:
+        return
     user = update.effective_user
     await update.message.reply_html(
         rf"Hello {user.mention_html()}! I'm an AI-powered chatbot. "
@@ -69,6 +71,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle /help command."""
+    if not update.message:
+        return
     await update.message.reply_text(
         "Send me a message and I'll respond using AI.\n\n"
         "Commands:\n"
@@ -80,6 +84,10 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
 
 async def clear_history(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Clear conversation history for this user."""
+    if not update.message:
+        return
+    if context.user_data is None:
+        context.user_data = {}
     context.user_data.clear()
     await update.message.reply_text("Conversation history cleared.")
 
@@ -96,6 +104,9 @@ async def chat(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             "Rate limit exceeded. Please wait a moment and try again."
         )
         return
+
+    if context.user_data is None:
+        context.user_data = {}
 
     user_text = update.message.text
 

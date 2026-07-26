@@ -18,6 +18,7 @@ import logging
 import os
 import sys
 from datetime import datetime, timedelta
+from datetime import time as dt_time
 
 from telegram import Update
 from telegram.ext import (
@@ -35,6 +36,8 @@ logger = logging.getLogger(__name__)
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle /start command."""
+    if not update.message:
+        return
     await update.message.reply_text(
         "Scheduled Messages Bot\n\n"
         "Commands:\n"
@@ -46,6 +49,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 async def remind(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Set a reminder."""
+    if not update.message:
+        return
     if not context.args or len(context.args) < 2:
         await update.message.reply_text("Usage: /remind <minutes> <message>")
         return
@@ -59,6 +64,10 @@ async def remind(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     message = " ".join(context.args[1:])
     chat_id = update.effective_chat.id if update.effective_chat else 0
 
+    if not context.job_queue:
+        await update.message.reply_text("Job queue is not available.")
+        return
+
     context.job_queue.run_once(
         send_reminder,
         when=timedelta(minutes=minutes),
@@ -71,7 +80,9 @@ async def remind(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 async def send_reminder(context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send the reminder message."""
-    data = context.job.data
+    if not context.job or not context.job.data:
+        return
+    data: dict[str, str | int] = context.job.data  # type: ignore[assignment]
     chat_id = data["chat_id"]
     message = data["message"]
 
@@ -81,7 +92,11 @@ async def send_reminder(context: ContextTypes.DEFAULT_TYPE) -> None:
 
 async def daily_greeting(context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send daily greeting to all subscribed chats."""
+    if not context.job:
+        return
     chat_id = context.job.chat_id
+    if not chat_id:
+        return
     await context.bot.send_message(
         chat_id=chat_id,
         text="Good morning! Here's your daily update.",
@@ -90,7 +105,13 @@ async def daily_greeting(context: ContextTypes.DEFAULT_TYPE) -> None:
 
 async def toggle_daily(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Toggle daily greeting."""
+    if not update.message:
+        return
     chat_id = update.effective_chat.id if update.effective_chat else 0
+
+    if not context.job_queue:
+        await update.message.reply_text("Job queue is not available.")
+        return
 
     # Check if daily job already exists
     current_jobs = context.job_queue.get_jobs_by_name(f"daily_{chat_id}")
@@ -102,7 +123,7 @@ async def toggle_daily(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     else:
         context.job_queue.run_daily(
             daily_greeting,
-            time=datetime.now().replace(hour=8, minute=0, second=0),
+            time=dt_time(8, 0),
             chat_id=chat_id,
             name=f"daily_{chat_id}",
         )
@@ -111,6 +132,8 @@ async def toggle_daily(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
 
 async def status(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Show scheduled jobs."""
+    if not update.message:
+        return
     jobs = context.job_queue.get_jobs_by_name("") if context.job_queue else []
 
     if not jobs:
