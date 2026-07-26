@@ -1,20 +1,43 @@
-# AGENTS.md
+# Telegram Bot Framework — AI Agent Instructions
 
-## Overview
+## Repository Purpose
+This repository is a comprehensive developer handbook for building Telegram bots with Python using the `python-telegram-bot` library (v20+/v21.x). It contains documentation, examples, and AI agent configurations.
 
-This is a flat workspace of standalone Python scripts — no package structure, no build system, no test framework, no CI.
+## Key Files
+- `docs/` — 21-chapter developer handbook
+- `examples/` — Production-quality bot examples
+- `pyproject.toml` — Python project metadata
+- `requirements.txt` — Dependencies
+- `.env.example` — Environment variable template
 
-## Conventions
+## Code Standards
+- Always use `python-telegram-bot` v20+ (async/await patterns)
+- Use PEP 484 type hints throughout
+- Include error handling and logging
+- Follow PEP 8 style guidelines
+- Use `ApplicationBuilder` pattern, not deprecated `Updater`
 
-- Scripts are single-file, mostly Python 3. Dependencies vary per script (requests, etc.) — check imports at the top of each file.
-- No shared modules or internal libraries. Each script is self-contained.
-- Output files (`.txt`, `.log`) are generated artifacts, not source of truth.
-- `__pycache__/` can be ignored.
+## Common Patterns
+```python
+# Application setup
+application = ApplicationBuilder().token(token).build()
 
-## Running scripts
+# Handler registration
+application.add_handler(CommandHandler("start", start))
 
+# Running
+application.run_polling(drop_pending_updates=True)
 ```
-python <script>.py
-```
 
-No special setup, environment variables, or virtual environment is enforced. Individual scripts may require API tokens or credentials referenced in their code.
+## Security Rules
+- Never hardcode tokens or secrets
+- Use environment variables for configuration
+- Validate all user input
+- Implement rate limiting
+- Follow OWASP guidelines
+
+## Documentation Style
+- Use Markdown format
+- Include code examples with type hints
+- Provide both simple and advanced examples
+- Reference official PTB documentation

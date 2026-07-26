@@ -1,0 +1,29 @@
+# Telegram Bot Framework — RooCode Rules
+
+## Project Overview
+Developer handbook for Telegram bot development with python-telegram-bot v20+.
+
+## Code Standards
+- Async/await patterns (v20+)
+- PEP 484 type hints
+- Error handling and logging
+- PEP 8 compliant
+
+## Repository Structure
+- `docs/` — 21-chapter handbook
+- `examples/` — Production bot examples
+- `skills/` — AI skill definitions
+
+## Key Patterns
+```python
+from telegram import Update
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
+
+async def handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await update.message.reply_text("Response")
+```
+
+## Security
+- Use environment variables
+- Never hardcode tokens
+- Validate input

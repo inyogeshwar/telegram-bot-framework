@@ -181,40 +181,50 @@ This handbook is designed for:
 |---|---|---|
 | **0** | **Introduction** *(this chapter)* | What is the Bot API, why build bots, library overview |
 | **1** | [Architecture](01-architecture.md) | Bot API internals, update cycle, polling vs. webhooks, privacy mode |
-| **2** | [Setup & Installation](02-setup.md) | Installing PTB, creating your first bot, project structure |
-| **3** | [Handlers & Updates](03-handlers.md) | Command handlers, message filters, callback queries, inline queries |
-| **4** | [Keyboards & Inline Buttons](04-keyboards.md) | Reply keyboards, inline keyboards, callback data patterns |
-| **5** | [Files & Media](05-files.md) | Sending/receiving files, photos, videos, documents, streaming |
-| **6** | [ConversationHandler](06-conversations.md) | Multi-step workflows, FSM patterns, timeouts, fallbacks |
-| **7** | [Persistence & Storage](07-persistence.md) | SQLite, Redis, MongoDB backends; user state, job queue |
-| **8** | [Webhooks in Production](08-webhooks.md) | HTTPS setup, reverse proxies, Cloudflare, certificate pinning |
-| **9** | [Job Queue & Scheduling](09-jobs.md) | Recurring tasks, delays, scheduled messages, timezone handling |
-| **10** | [Payments & Telegram Stars](10-payments.md) | Invoices, shipping, refunds, Telegram Stars integration |
-| **11** | [Web Apps & Mini Apps](11-miniapps.md) | Launching Mini Apps, authentication, secure data validation |
-| **12** | [Testing](12-testing.md) | Unit tests, mock objects, integration tests, CI/CD |
-| **13** | [Deployment](13-deployment.md) | Docker, cloud platforms, monitoring, logging, scaling |
-| **14** | [Security Best Practices](14-security.md) | Token management, input validation, rate limiting, GDPR |
-| **15** | [Advanced Patterns](15-advanced.md) | Custom handlers, dependency injection, middleware, plugins |
+| **2** | [Installation & Setup](02-installation.md) | Prerequisites, pip install, project structure, virtual environments |
+| **3** | [Configuration & Environment](03-configuration.md) | Environment variables, secrets management, logging, Config class |
+| **4** | [Handlers](04-handlers.md) | All handler types, Application object, groups, priority, error handling |
+| **5** | [Filters](05-filters.md) | Complete filter reference, combinations, custom filters |
+| **6** | [Keyboards & Buttons](06-keyboards.md) | Inline keyboards, reply keyboards, button types, navigation patterns |
+| **7** | [ConversationHandler](07-conversations.md) | Multi-step dialogs, state management, persistence, nested conversations |
+| **8** | [Media & Files](08-media.md) | Sending photos, video, audio, documents, albums, file handling |
+| **9** | [Message Formatting](09-formatting.md) | MarkdownV2, HTML, entities, escaping, custom emoji, date-time |
+| **10** | [Inline Mode](10-inline-mode.md) | Inline queries, result types, pagination, personal results |
+| **11** | [Advanced Features](11-advanced.md) | Deep linking, context objects, jobs, ephemeral messages, persistence, rich messages |
+| **12** | [Payments & Stars](12-payments.md) | Telegram Stars, invoices, subscriptions, paid media, pre-checkout |
+| **13** | [Mini Apps & Web Apps](13-mini-apps.md) | Web App integration, initData validation, JavaScript API |
+| **14** | [Groups & Channels](14-groups-channels.md) | Group bots, admin operations, permissions, forum topics |
+| **15** | [Deployment & Hosting](15-deployment.md) | Webhooks, Docker, Heroku, VPS, CI/CD, scaling, monitoring |
+| **16** | [Security Audit](16-security-audit.md) | Complete security guide: tokens, input validation, OWASP, checklist |
+| **17** | [Testing & Debugging](17-testing.md) | Unit tests, mocks, pytest, debugging techniques |
+| **18** | [FAQ & Common Issues](18-faq.md) | Solutions to the most common developer problems |
+| **19** | [Appendix](19-appendix.md) | API quick reference, filter reference, formatting guide, version history |
+| **20** | [Agent Review](20-agent-review.md) | AI agent review: gaps, hallucination risks, best practices |
 
 ### Reading Order
 
 ```mermaid
 graph LR
     A[00-Introduction] --> B[01-Architecture]
-    B --> C[02-Setup]
-    C --> D[03-Handlers]
-    D --> E[04-Keyboards]
-    E --> F[05-Files]
-    F --> G[06-Conversations]
-    G --> H[07-Persistence]
-    H --> I[08-Webhooks]
-    I --> J[09-Jobs]
-    J --> K[10-Payments]
-    K --> L[11-MiniApps]
-    L --> M[12-Testing]
-    M --> N[13-Deployment]
-    N --> O[14-Security]
-    O --> P[15-Advanced]
+    B --> C[02-Installation]
+    C --> D[03-Configuration]
+    D --> E[04-Handlers]
+    E --> F[05-Filters]
+    F --> G[06-Keyboards]
+    G --> H[07-Conversations]
+    H --> I[08-Media]
+    I --> J[09-Formatting]
+    J --> K[10-Inline Mode]
+    K --> L[11-Advanced]
+    L --> M[12-Payments]
+    M --> N[13-Mini Apps]
+    N --> O[14-Groups & Channels]
+    O --> P[15-Deployment]
+    P --> Q[16-Security]
+    Q --> R[17-Testing]
+    R --> S[18-FAQ]
+    S --> T[19-Appendix]
+    T --> U[20-Agent Review]
 ```
 
 !!! note "Non-linear reading"

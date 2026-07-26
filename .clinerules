@@ -1,0 +1,28 @@
+# Telegram Bot Framework — Cline Rules
+
+## Project Context
+This repository is a developer handbook for Telegram bot development with Python. It contains documentation, examples, and AI agent configurations.
+
+## Code Generation Rules
+1. Use python-telegram-bot v20+ (async/await patterns)
+2. Always include type hints (PEP 484)
+3. Include error handling and logging
+4. Follow PEP 8 style guidelines
+5. Use ApplicationBuilder pattern
+
+## File Structure
+- `docs/` — Documentation chapters
+- `examples/` — Code examples
+- `skills/` — Skill definitions
+- `agents/` — Agent configurations
+
+## Common Imports
+```python
+from telegram import Update
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
+```
+
+## Security
+- Never hardcode tokens
+- Use os.getenv() for secrets
+- Validate all user input

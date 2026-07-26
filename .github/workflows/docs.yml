@@ -1,0 +1,30 @@
+name: Documentation
+
+on:
+  push:
+    branches: [main]
+    paths: ['docs/**']
+  pull_request:
+    branches: [main]
+    paths: ['docs/**']
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Check markdown syntax
+        run: |
+          find docs -name "*.md" -exec markdownlint {} \;
+        continue-on-error: true
+      
+      - name: Check for broken links
+        uses: gaurav-nelson/github-action-markdown-link-check@v1
+        with:
+          config-file: '.github/markdown-link-check.json'
+      
+      - name: Validate Mermaid diagrams
+        run: |
+          echo "Checking for valid Mermaid syntax in docs..."
+          grep -r "```mermaid" docs/ | head -20

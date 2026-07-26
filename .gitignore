@@ -7,23 +7,30 @@ __pycache__/
 dist/
 build/
 *.egg
+.eggs/
 
 # Virtual environments
 venv/
 .venv/
 env/
+ENV/
 
 # Environment variables
 .env
 .env.*
+!.env.example
 
 # Sensitive files
 gmail_token.txt
 tokens_output.txt
 *.token
+*.secret
+credentials.json
+service_account.json
 
 # Logs
 *.log
+logs/
 
 # Output files
 *_output.txt
@@ -47,6 +54,26 @@ desktop.ini
 .idea/
 *.swp
 *.swo
+*~
 
 # HAR files (contain sensitive data)
 *.har
+
+# Python tools
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# Docker
+.docker/
+
+# Node (for any web frontend)
+node_modules/
+package-lock.json
+
+# Compiled
+*.pyc
+*.pyo

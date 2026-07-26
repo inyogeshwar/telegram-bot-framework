@@ -7,7 +7,7 @@ Quick-reference tables, formatting guides, and external resources for the
 
 ## A. Bot API Methods
 
-Essential methods from the Telegram Bot API (v10.2). Full documentation:
+Essential methods from the Telegram Bot API. Full documentation:
 <https://core.telegram.org/bots/api#available-methods>
 
 ### Getting Information
@@ -27,7 +27,7 @@ Essential methods from the Telegram Bot API (v10.2). Full documentation:
 | `sendMessage` | Send a text message |
 | `forwardMessage` | Forward a message from one chat to another |
 | `copyMessage` | Copy a message without showing the original sender |
-| `sendReply` | *(use `reply_text` / `reply_to_message_id` on Message)* |
+| `reply_text` | Reply to a message (convenience method on Message object) |
 
 ### Sending Media
 
@@ -43,7 +43,6 @@ Essential methods from the Telegram Bot API (v10.2). Full documentation:
 | `sendPaidMedia` | Send paid media with stars |
 | `sendMediaGroup` | Send a group of photos/videos/documents (2–10) |
 | `sendSticker` | Send a sticker |
-| `sendPaidMedia` | Send paid media content |
 
 ### Interactive Elements
 
@@ -51,7 +50,7 @@ Essential methods from the Telegram Bot API (v10.2). Full documentation:
 |--------|-------------|
 | `sendPoll` | Send a poll |
 | `sendDice` | Send an animated dice |
-| `sendQuiz` | Send a quiz (a type of poll) |
+| `sendPoll` (quiz) | Send a quiz (use `sendPoll` with `quiz=True`) |
 | `sendInvoice` | Send a payment invoice |
 | `sendGame` | Send a game |
 | `sendLocation` | Send a geographic location |

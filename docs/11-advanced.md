@@ -425,7 +425,7 @@ async def safe_reminder(context: ContextTypes.DEFAULT_TYPE) -> None:
 Ephemeral messages let the bot send **private responses to a specific user** within a group chat. Other users in the group do not see these messages.
 
 > [!NOTE]
-> Available in **python-telegram-bot v10.2+** and Telegram Bot API **6.1+**.
+> Available in **python-telegram-bot v20+** and Telegram Bot API **6.1+**.
 
 ### Sending Ephemeral Messages
 
@@ -488,7 +488,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 Bots can send messages to other bots, enabling orchestration, microservices, and multi-bot workflows.
 
 > [!NOTE]
-> Available in **python-telegram-bot v10.0+** and Telegram Bot API **6.0+**.
+> Available in **python-telegram-bot v20+** and Telegram Bot API **6.0+**.
 
 ### Enabling Bot-to-Bot Communication
 
@@ -637,7 +637,7 @@ async def community_update(update: Update, context: ContextTypes.DEFAULT_TYPE) -
 Rich messages provide structured, formatted content beyond plain text and Markdown. They support block-level elements like paragraphs, headings, lists, tables, and code blocks.
 
 > [!NOTE]
-> Available in **python-telegram-bot v10.1+** and Telegram Bot API **8.0+**.
+> Available in **python-telegram-bot v20+** and Telegram Bot API **8.0+**.
 
 ### sendRichMessage
 

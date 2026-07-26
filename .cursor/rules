@@ -1,0 +1,28 @@
+# Telegram Bot Framework
+
+## Project Overview
+This is a comprehensive developer handbook for building Telegram bots with Python using the `python-telegram-bot` library (v20+/v21.x).
+
+## Repository Structure
+- `docs/` — 21-chapter developer handbook
+- `examples/` — Production-quality bot examples
+- `skills/` — AI agent skill definitions
+- `agents/` — AI agent configurations
+
+## Code Standards
+- Use python-telegram-bot v20+ (async/await)
+- PEP 484 type hints throughout
+- Error handling and logging in all examples
+- PEP 8 compliant code style
+
+## Key Commands
+- Install: `pip install -r requirements.txt`
+- Run examples: `python examples/echo_bot.py`
+- Lint: `ruff check .`
+- Type check: `mypy .`
+
+## Security
+- Never hardcode tokens
+- Use environment variables
+- Validate user input
+- Follow OWASP guidelines

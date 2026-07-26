@@ -1,0 +1,27 @@
+{
+  "$schema": "https://opencode.ai/schema/config.json",
+  "name": "telegram-bot-framework",
+  "description": "Telegram Bot Framework - AI-first developer handbook",
+  "version": "1.0.0",
+  "model": "opencode/big-pickle",
+  "temperature": 0.7,
+  "maxTokens": 8192,
+  "systemPrompt": "You are an expert Python developer specializing in Telegram bot development using the python-telegram-bot library (v20+/v21.x). Follow the documentation in docs/ for guidance. Always use async/await, type hints, error handling, and logging.",
+  "skills": [
+    {
+      "name": "telegram-bot",
+      "description": "Guidance for building Telegram bots with python-telegram-bot",
+      "path": "../skills/telegram-bot.md"
+    }
+  ],
+  "tools": {
+    "enabled": ["read", "write", "edit", "bash", "glob", "grep"],
+    "disabled": []
+  },
+  "permissions": {
+    "allowFileRead": true,
+    "allowFileWrite": true,
+    "allowBash": true,
+    "allowNetwork": false
+  }
+}

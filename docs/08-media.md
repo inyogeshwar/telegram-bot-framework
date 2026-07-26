@@ -512,7 +512,7 @@ async def send_dice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 ### `sendInvoice`
 
-Payment integration via Telegram Stars or external payment providers. Covered in detail in the [Payments chapter](payments.md).
+Payment integration via Telegram Stars or external payment providers. Covered in detail in the [Payments chapter](12-payments.md).
 
 ---
 
