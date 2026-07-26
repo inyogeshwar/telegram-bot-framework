@@ -120,14 +120,18 @@ This repository follows OWASP security guidelines:
 
 Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
+## Contributors
+
+See [CONTRIBUTORS.md](CONTRIBUTORS.md) for the list of contributors.
+
 ## License
 
 MIT License — see [LICENSE](LICENSE) for details.
 
-## Author
+## Author & Maintainer
 
-**Yogeshwar Kumar** — [GitHub](https://github.com/inyogeshwar)
+**Yogeshwar Kumar** — [@inyogeshwar](https://github.com/inyogeshwar)
 
 ---
 
-*Built with care for the Python Telegram bot community.*
+*Built with care by Yogeshwar Kumar for the Python Telegram bot community.*
