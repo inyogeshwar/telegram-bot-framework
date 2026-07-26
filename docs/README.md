@@ -63,6 +63,7 @@ A comprehensive, production-grade developer handbook for building Telegram bots 
 | [18](18-faq.md) | FAQ & Common Issues | Solutions to the most common developer problems |
 | [19](19-appendix.md) | Appendix | API quick reference, filter reference, formatting guide, version history |
 | [20](20-agent-review.md) | Agent Review | OpenCode AI agent review: gaps, hallucination risks, best practices |
+| [COMPREHENSIVE](COMPREHENSIVE-REFERENCE.md) | Complete Reference | Every function, class, method, filter, handler, keyboard, and API method |
 
 ## Code Examples
 
