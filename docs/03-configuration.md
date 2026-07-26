@@ -105,7 +105,7 @@ class Config:
 ### .env File Example
 
 ```dotenv
-BOT_TOKEN=6123456789:AAHxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+BOT_TOKEN=YOUR_BOT_TOKEN_HERE
 DATABASE_URL=postgresql://user:password@localhost:5432/bot_db
 REDIS_URL=redis://:secret@localhost:6379/0
 ADMIN_IDS=123456789,987654321
