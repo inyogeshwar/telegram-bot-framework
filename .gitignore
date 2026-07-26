@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Environment variables
+.env
+.env.*
+
+# Sensitive files
+gmail_token.txt
+tokens_output.txt
+*.token
+
+# Logs
+*.log
+
+# Output files
+*_output.txt
+*_search.txt
+*_found.txt
+hits*.txt
+debug_output.txt
+multiple_test.txt
+simple_test_result.txt
+run_log.txt
+test_run.log
+live_run.log
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# HAR files (contain sensitive data)
+*.har
