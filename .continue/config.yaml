@@ -1,29 +1,20 @@
+---
 # Telegram Bot Framework — Continue.dev Config
 
-## Project Context
-Developer handbook for Telegram bot development with python-telegram-bot v20+.
+project_context: "Developer handbook for Telegram bot development with python-telegram-bot v20+."
 
-## Code Standards
-- Use async/await patterns
-- Include type hints
-- Add error handling
-- Use logging module
+code_standards:
+  - "Use async/await patterns"
+  - "Include type hints"
+  - "Add error handling"
+  - "Use logging module"
 
-## File Structure
-- `docs/` — Documentation
-- `examples/` — Code examples
-- `skills/` — Skill definitions
+file_structure:
+  docs: "Documentation"
+  examples: "Code examples"
+  skills: "Skill definitions"
 
-## Common Patterns
-```python
-from telegram import Update
-from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
-
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update.message.reply_text("Hello!")
-```
-
-## Security
-- Environment variables for tokens
-- Input validation
-- Rate limiting
+security:
+  - "Environment variables for tokens"
+  - "Input validation"
+  - "Rate limiting"

@@ -6,7 +6,7 @@ temperature: 0.3
 permission:
   read: allow
   edit: allow
-  bash: 
+  bash:
     "*": ask
     "python *": allow
     "pip install *": allow

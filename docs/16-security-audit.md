@@ -289,10 +289,10 @@ def validate_integer_input(value: str, min_val: int = 0, max_val: int = 2**31) -
         parsed = int(value)
     except (ValueError, TypeError):
         raise ValueError(f"Invalid integer: {value}")
-    
+
     if parsed < min_val or parsed > max_val:
         raise ValueError(f"Integer {parsed} out of range [{min_val}, {max_val}]")
-    
+
     return parsed
 ```
 

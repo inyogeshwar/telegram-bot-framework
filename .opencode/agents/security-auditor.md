@@ -6,7 +6,7 @@ temperature: 0.1
 permission:
   read: allow
   edit: deny
-  bash: 
+  bash:
     "*": deny
     "python *": allow
     "pip-audit *": allow

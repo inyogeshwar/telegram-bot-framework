@@ -5,11 +5,11 @@ export default tool({
   args: {},
   async execute(args, context) {
     const dir = context.worktree
-    
+
     // Count files
     const pyFiles = await Bun.$`find ${dir} -name "*.py" -type f | wc -l`.text()
     const mdFiles = await Bun.$`find ${dir} -name "*.md" -type f | wc -l`.text()
-    
+
     // Get git info
     let gitInfo = "Not a git repo"
     try {
@@ -17,10 +17,10 @@ export default tool({
       const commits = await Bun.$`git -C ${dir} rev-list --count HEAD`.text()
       gitInfo = `Branch: ${branch.trim()}, Commits: ${commits.trim()}`
     } catch {}
-    
+
     // Get directory structure
     const structure = await Bun.$`ls -la ${dir}`.text()
-    
+
     return `
 Project Statistics:
 - Python files: ${pyFiles.trim()}

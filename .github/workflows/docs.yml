@@ -13,17 +13,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Check markdown syntax
         run: |
           find docs -name "*.md" -exec markdownlint {} \;
         continue-on-error: true
-      
+
       - name: Check for broken links
         uses: gaurav-nelson/github-action-markdown-link-check@v1
         with:
           config-file: '.github/markdown-link-check.json'
-      
+
       - name: Validate Mermaid diagrams
         run: |
           echo "Checking for valid Mermaid syntax in docs..."
