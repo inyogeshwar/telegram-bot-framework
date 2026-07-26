@@ -1,0 +1,12 @@
+{
+  "name": "telegram-bot",
+  "description": "Telegram Bot Framework plugin for Claude Code - Build production-ready Telegram bots with python-telegram-bot v20+",
+  "version": "1.0.0",
+  "author": {
+    "name": "Yogeshwar Kumar",
+    "url": "https://github.com/inyogeshwar"
+  },
+  "homepage": "https://github.com/inyogeshwar/telegram-bot-framework",
+  "repository": "https://github.com/inyogeshwar/telegram-bot-framework",
+  "license": "MIT"
+}
