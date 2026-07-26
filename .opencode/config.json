@@ -27,6 +27,12 @@
       "description": "Production-quality bot code examples"
     }
   },
+  "formatter": {
+    "ruff": {
+      "command": ["ruff", "format", "$FILE"],
+      "extensions": [".py", ".pyi"]
+    }
+  },
   "tools": {
     "enabled": ["read", "write", "edit", "bash", "glob", "grep", "skill"],
     "disabled": []
